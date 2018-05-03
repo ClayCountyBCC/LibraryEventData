@@ -13,14 +13,19 @@ namespace LibraryEventData.Models
     public List<string> target_audience { get; set; }
     public List<string> age_group{ get; set; }
 
-
-
     public TargetData()
     {
         
     }
     
 
+    public static List<TargetData> GetSelections()
+    {
+      
+      // TODO: get selection cached
 
+
+      return new List<TargetData>();
+    }
   }
 }

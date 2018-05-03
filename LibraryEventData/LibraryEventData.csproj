@@ -98,6 +98,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\EventController.cs" />
+    <Compile Include="Controllers\TargetDataController.cs" />
     <Compile Include="Models\AttendenceData.cs" />
     <Compile Include="Models\Constants.cs" />
     <Compile Include="Models\ErrorLog.cs" />
@@ -110,7 +112,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Content\" />
-    <Folder Include="Controllers\" />
     <Folder Include="Scripts\" />
   </ItemGroup>
   <PropertyGroup>
