@@ -32,7 +32,7 @@ namespace LibraryEventData.Models
     }
 
 
-    public static List<Event> GetEvents(long event_id)
+    public static List<Event> GetEvents(long event_id = -1)
     {
 
       return new List<Event>();

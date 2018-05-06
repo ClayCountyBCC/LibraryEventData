@@ -1,10 +1,227 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <title>Clay Event Data</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Clay Event Data</title>
+  <link href="Content/bulma.min.css" rel="stylesheet" />
+  <link href="Content/Utilities.min.css" rel="stylesheet" />
 </head>
 <body>
+  <nav style="margin-bottom: 1em;"
+       class="navbar" role="navigation" aria-label="main navigation">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item has-text-weight-bold"
+           href="index.html">
+          Clay Event Data
+        </a>
+      </div>
+      <div class="navbar-menu is-active">
+        <div class="navbar-start">
+          <a class="navbar-item"
+             onclick="EventData.View('ViewEvents');">
+            View Events
+          </a>
+          <a class="navbar-item"
+             onclick="EventData.View('AddEvent');">
+            Add Event
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <div class="container">
+    <section class="show"
+             id="ViewEvents">
 
+      <nav style="padding: 1em;"
+           class="level box">
+        <div class="level-item">
+          <label class="checkbox">
+            <input id="filterCompleted"
+                   checked
+                   type="checkbox" />
+            Show Completed
+          </label>
+        </div>
+        <div class="level-item">
+          <div class="field is-horizontal">
+
+            <div class="field-label is-normal">
+              <label class="label">
+                Location
+              </label>
+            </div>
+
+            <div class="field-body">
+              <div class="field">
+
+                <div class="control">
+                  <div class="select">
+                    <select id="filterLocation">
+                      <option selected
+                              value="-1">
+                        All Libraries
+                      </option>
+                      <option>Orange Park Library</option>
+                      <option>Middleburg Library</option>
+                      <option>Other Libraries</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="level-item">
+
+          <div class="field is-horizontal">
+
+            <div class="field-label is-normal">
+              <label style="white-space: nowrap"
+                     class="label">
+                Event Date              
+              </label>
+            </div>
+
+            <div class="field-body">
+              <div class="field">
+
+                <div class="control">
+                  <div class="select">
+                    <select id="filterEventDate">
+                      <option selected
+                              value="7">
+                        Last 7 Days
+                      </option>
+                      <option value="30">Last 30 Days</option>
+                      <option value="60">Last 60 Days</option>
+                      <option value="-1">All</option>
+                    </select>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+        <div class="level-item">
+          <button class="button is-success">
+            Refresh
+          </button>
+
+        </div>
+      </nav>
+      <table class="table is-fullwidth">
+        <thead>
+          <tr>
+            <th style="width: 40%;">Event</th>
+            <th style="width: 15%;">Date</th>
+            <th style="width: 15%;">Time</th>
+            <th style="width: 30%;">Finished</th>
+          </tr>
+        </thead>
+        <tbody id="eventList">
+
+        </tbody>
+      </table>
+      <div class="modal"
+           id="addAttendance">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+          <header class="modal-card-head">
+            <p class="modal-card-title">
+              Add Attendance Information
+            </p>
+            <button class="delete" 
+                    aria-label="close"></button>
+          </header>
+          <section class="modal-card-body">
+            Show Selected Event Name / Location / Date from-through
+            Select Event Type
+            Select Target Audience
+            Select Event Age Groups
+            Enter Number of Youths
+            Enter Number of Adults
+            Add Notes
+          </section>
+          <footer class="modal-card-foot">
+            <button class="button is-success">Save changes</button>
+            <button class="button">Cancel</button>
+          </footer>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="hide"
+             id="AddEvent">
+      <div class="field is-horizontal">
+        <div class="field-label is-normal">
+          <label class="label">Event Name</label>
+        </div>
+        <div class="field-body">
+          <div class="field is-grouped">
+            <div class="control  is-expanded">
+              <input type="text"
+                     class="input"
+                     id="addEventName"
+                     placeholder="The Event Name or Title" />
+            </div>
+            <div class="control">
+              <button onclick="EventData.AddEventRow();"
+                      type="button"
+                      class="button is-primary">
+                Add Event Date/Location
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <table class="table is-fullwidth">
+        <thead>
+          <tr>
+            <th style="width: 30%;">Location</th>
+            <th style="width: 25%;">Event Date</th>
+            <th style="width: 15%;">From</th>
+            <th style="width: 15%;">To</th>
+            <th style="width: 15%;"></th>
+          </tr>
+        </thead>
+        <tbody id="addEventList">
+
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="4">
+            </td>
+            <td>
+              <button onclick="EventData.SaveEvent(); return false;"
+                      class="button is-success"
+                      type="button">
+                Save Events
+              </button>
+              <button onclick="EventData.ResetAddEvent(); return false;"
+                      class="button is-warning"
+                      type="button">
+                Reset
+              </button>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </section>
+  </div>
+  <script src="Scripts/app.js"></script>
+  <script src="Scripts/Utilities.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function (event)
+    {
+      EventData.Start();
+    });
+  </script>
 </body>
 </html>

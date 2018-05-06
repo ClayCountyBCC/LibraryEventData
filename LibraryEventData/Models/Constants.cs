@@ -11,7 +11,7 @@ namespace LibraryEventData.Models
 {
   public static class Constants
   {
-    public const int appId = ;
+    public const int appId = 20020;
 
     public enum PaymentTypes: int
     {

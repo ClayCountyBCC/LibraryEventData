@@ -48,7 +48,7 @@ namespace LibraryEventData.Models
       switch (s[0].ToLower())
       {
         case "eventypeselections":
-          return List<Event> Event.getEvent();
+          return Event.GetEvents();
         default:
           return null;
       }
