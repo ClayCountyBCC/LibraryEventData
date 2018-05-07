@@ -102,6 +102,7 @@
     <Compile Include="Controllers\TargetDataController.cs" />
     <Compile Include="Models\AttendenceData.cs" />
     <Compile Include="Models\Constants.cs" />
+    <Compile Include="Models\DataContainer.cs" />
     <Compile Include="Models\ErrorLog.cs" />
     <Compile Include="Models\Event.cs" />
     <Compile Include="Models\myCache.cs" />

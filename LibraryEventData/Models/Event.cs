@@ -9,12 +9,12 @@ namespace LibraryEventData.Models
   {
     public long id { get; set; }
     public string name { get; set; }
-    public DateTime event_dates { get; set; }
+    public DateTime event_date { get; set; }
     public DateTime event_time_from { get; set; }
     public DateTime event_time_to { get; set; }
     public int library_id{ get; set; }
     public List<string> age_groups { get; set; }
-    public List<AttendenceData> AttendenceData { get; set; }
+    public AttendenceData manual_event_data { get; set; }
 
     public Event()
     {

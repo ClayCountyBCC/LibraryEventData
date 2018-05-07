@@ -8,10 +8,9 @@ namespace LibraryEventData.Models
   public class TargetData
   {
 
-    public List<string> library_name { get; set; }
-    public List<string> event_type { get; set; }
-    public List<string> target_audience { get; set; }
-    public List<string> age_group{ get; set; }
+    public int Label { get; set; }
+    public string Value { get; set; }
+
 
     public TargetData()
     {
@@ -19,12 +18,66 @@ namespace LibraryEventData.Models
     }
     
 
-    public static List<TargetData> GetSelections()
+    public static List<TargetData> GetLocations()
     {
-      
-      // TODO: get selection cached
+      string sql = @"
+        ";
+      Constants.Get_Data<TargetData>(sql); 
+      return new List<TargetData>();
+    }
 
+    public static List<TargetData> GetEventTypes()
+    {
+      string sql = @"
+        ";
+      Constants.Get_Data<TargetData>(sql); return new List<TargetData>();
+    }
 
+    public static List<TargetData> GetTargetAges()
+    {
+      string sql = @"
+        ";
+      Constants.Get_Data<TargetData>(sql);  // TODO: get selection cached
+      return new List<TargetData>();
+    }
+
+    public static List<TargetData> GetTargetAudience()
+    {
+      string sql = @"
+        ";
+      Constants.Get_Data<TargetData>(sql); // TODO: get selection cached
+      return new List<TargetData>();
+    }
+
+    public static List<TargetData> GetCachedLocations()
+    {
+      string sql = @"
+        ";
+      Constants.Get_Data<TargetData>(sql);
+      return new List<TargetData>();
+    }
+
+    public static List<TargetData> GetCachedEventTypes()
+    {
+
+      string sql = @"
+        ";
+      Constants.Get_Data<TargetData>(sql); return new List<TargetData>();
+    }
+
+    public static List<TargetData> GetCachedTargetAges()
+    {
+      string sql = @"
+        ";
+      Constants.Get_Data<TargetData>(sql);  // TODO: get selection cached
+      return new List<TargetData>();
+    }
+
+    public static List<TargetData> GetCached()
+    {
+      string sql = @"
+        ";
+      Constants.Get_Data<TargetData>(sql); // TODO: get selection cached
       return new List<TargetData>();
     }
   }
