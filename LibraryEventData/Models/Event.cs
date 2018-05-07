@@ -21,26 +21,38 @@ namespace LibraryEventData.Models
        
     }
 
-    public static List<Event> GetRawListOfEvents()
+    public static List<Event> GetEventsRaw()
     {
-      List<Event> events = new List<Event>();
+      string sql = @"
+      
+      USE ClayEventData
+      
+      SELECT DISTINCT id,event_name
+      FROM Event";
 
-      // TODO: do stuff to get events
+      try
+      {
+        return Constants.Get_Data<Event>(sql);
+      }
+      catch (Exception ex)
+      {
+        Constants.Log(ex, sql);
+        return new List<Event>();
+      }
 
-
-      return events;
+     
     }
 
 
-    public static List<Event> GetEvents(long event_id)
+    public static List<Event> GetEvenAttendenceDat(long event_id)
     {
-
+      
       return new List<Event>();
     }
 
-    public static bool SaveEvent(List<Event> events)
+    public static bool SaveEvents(List<Event> events, UserAccess ua)
     {
-
+      
       return true;
     }
   }

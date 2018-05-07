@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Dapper;
 
 namespace LibraryEventData.Models
 {
@@ -18,5 +19,20 @@ namespace LibraryEventData.Models
     {
       
     }
+
+
+    public static List<AttendenceData> GetEvenAttendenceDat(long event_id)
+    {
+
+      return new List<AttendenceData>();
+    }
+
+    public static AttendenceData SaveAttendanceData(long event_id, AttendenceData data)
+    {
+
+      
+      return new AttendenceData();
+    }
+
   }
 }

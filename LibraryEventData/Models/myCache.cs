@@ -47,12 +47,12 @@ namespace LibraryEventData.Models
 
       switch (s[0].ToLower())
       {
-        case "eventype":
-          return TargetData.GetCachedEventTypes();
-        case "eventlocations":
-          return TargetData.GetCachedLocations();
-        case "targetages":
-          return TargetData.GetCachedTargetAges();
+        case "event_types":
+          return TargetData.GetEventTypesRaw();
+        case "locations":
+          return TargetData.GetLocationsRaw();
+        case "target_audience":
+          return TargetData.GetTargetAudienceRaw();
         default:
           return null;
       }
