@@ -98,6 +98,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\AttendanceDataController.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\TargetDataController.cs" />
     <Compile Include="Models\AttendenceData.cs" />
