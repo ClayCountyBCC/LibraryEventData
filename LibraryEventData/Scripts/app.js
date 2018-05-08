@@ -1,12 +1,39 @@
+/// <reference path="xhr.ts" />
+/// <reference path="utilities.ts" />
 var EventData;
 (function (EventData) {
     EventData.Times = ['10:00 AM', '10:15 AM', '10:30 AM', '10:45 AM', '11:00 AM'];
     EventData.Locations = [];
-    EventData.AddedEvents = [];
+    EventData.AddedEvents = []; // used for the Add Event functionality
+    EventData.CurrentAccess = null;
     function Start() {
         ResetAddEvent();
+        // Uncomment this when the end points are working.
+        // GetInitialData();
     }
     EventData.Start = Start;
+    function GetInitialData() {
+        EventData.DataContainer.Get().then(function (dc) {
+            EventData.Times = dc.Times;
+            EventData.Locations = dc.Locations;
+            PopulateUIElements(dc.Event_Types, dc.Target_Audiences);
+            EventData.CurrentAccess = dc.CurrentAccess;
+        }).catch(function (error) {
+            // Notify of error.  If this happens, the app is basically unusable.
+        });
+    }
+    function PopulateUIElements(EventTypes, TargetAudiences) {
+        var etSelect = document.getElementById("selectEventType");
+        var taSelect = document.getElementById("selectTargetAudience");
+        PopulateSelect(etSelect, EventTypes);
+        PopulateSelect(taSelect, TargetAudiences);
+    }
+    function PopulateSelect(e, data) {
+        for (var _i = 0, data_1 = data; _i < data_1.length; _i++) {
+            var d = data_1[_i];
+            e.add(Utilities.Create_Option(d.Value, d.Label));
+        }
+    }
     function View(id) {
         var sections = document.querySelectorAll("body > div > section");
         if (sections.length > 0) {
@@ -23,6 +50,8 @@ var EventData;
     }
     EventData.View = View;
     function ResetAddEvent() {
+        // This function puts the Add Event page in its initial state
+        // no matter it's current state.
         var eventName = document.getElementById("addEventName");
         eventName.value = "";
         var addEventContainer = document.getElementById("addEventList");

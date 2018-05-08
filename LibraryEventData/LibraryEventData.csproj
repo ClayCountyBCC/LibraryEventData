@@ -184,6 +184,7 @@
       <DependentUpon>bulma.css</DependentUpon>
     </Content>
     <Content Include="index.html" />
+    <Content Include="Scripts\es6-promise.min.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -204,8 +205,14 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\app.ts" />
-    <TypeScriptCompile Include="Scripts\GenericData.ts" />
+    <TypeScriptCompile Include="Scripts\Attendance.ts" />
+    <TypeScriptCompile Include="Scripts\DataContainer.ts" />
+    <TypeScriptCompile Include="Scripts\Event.ts" />
+    <TypeScriptCompile Include="Scripts\TargetData.ts" />
+    <TypeScriptCompile Include="Scripts\typings\es6-promise\es6-promise.d.ts" />
+    <TypeScriptCompile Include="Scripts\UserAccess.ts" />
     <TypeScriptCompile Include="Scripts\Utilities.ts" />
+    <TypeScriptCompile Include="Scripts\XHR.ts" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />

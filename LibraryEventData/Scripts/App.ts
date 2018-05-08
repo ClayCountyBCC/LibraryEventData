@@ -1,13 +1,51 @@
-﻿namespace EventData
+﻿/// <reference path="xhr.ts" />
+/// <reference path="utilities.ts" />
+
+namespace EventData
 {
 
-  export let Times : Array<string> = ['10:00 AM', '10:15 AM', '10:30 AM', '10:45 AM', '11:00 AM'];
-  export let Locations : Array<GenericData> = [];
-  export let AddedEvents: Array<number> = [];
+  export let Times: Array<string> = ['10:00 AM', '10:15 AM', '10:30 AM', '10:45 AM', '11:00 AM'];
+  export let Locations: Array<TargetData> = [];
+  export let AddedEvents: Array<number> = []; // used for the Add Event functionality
+  export let CurrentAccess: UserAccess = null;
 
   export function Start():void
   {
+    
     ResetAddEvent();
+    // Uncomment this when the end points are working.
+    // GetInitialData();
+  }
+
+  function GetInitialData()
+  {
+    DataContainer.Get().then(
+      function (dc)
+      {
+        Times = dc.Times;
+        Locations = dc.Locations;
+        PopulateUIElements(dc.Event_Types, dc.Target_Audiences);
+        CurrentAccess = dc.CurrentAccess;        
+      }).catch(function (error)
+      {
+        // Notify of error.  If this happens, the app is basically unusable.
+      });
+  }
+
+  function PopulateUIElements(EventTypes: Array<TargetData>, TargetAudiences: Array<TargetData>)
+  {
+    let etSelect = <HTMLSelectElement>document.getElementById("selectEventType");
+    let taSelect = <HTMLSelectElement>document.getElementById("selectTargetAudience");
+    PopulateSelect(etSelect, EventTypes);
+    PopulateSelect(taSelect, TargetAudiences);
+  }
+
+  function PopulateSelect(e: HTMLSelectElement, data: Array<TargetData>)
+  {
+    for (let d of data)
+    {
+      e.add(Utilities.Create_Option(d.Value, d.Label));
+    }
   }
 
   export function View(id: string):void
@@ -32,6 +70,8 @@
 
   export function ResetAddEvent():void
   {
+    // This function puts the Add Event page in its initial state
+    // no matter it's current state.
     let eventName = <HTMLInputElement>document.getElementById("addEventName");
     eventName.value = "";
     let addEventContainer = document.getElementById("addEventList");
@@ -39,6 +79,8 @@
     AddedEvents = [];
     AddEventRow();
   }
+
+
 
   export function AddEventRow():void
   {

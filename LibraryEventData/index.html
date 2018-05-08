@@ -40,6 +40,7 @@
         <div class="level-item">
           <label class="checkbox">
             <input id="filterCompleted"
+                   onchange="EventData.Event.GetList();"
                    checked
                    type="checkbox" />
             Show Completed Only
@@ -59,10 +60,11 @@
 
                 <div class="control">
                   <div class="select">
-                    <select id="filterLocation">
+                    <select onchange="EventData.Event.GetList();"
+                            id="filterLocation">
                       <option selected
                               value="-1">
-                        All Libraries
+                        All Locations
                       </option>
                       <option>Orange Park Library</option>
                       <option>Middleburg Library</option>
@@ -81,7 +83,7 @@
             <div class="field-label is-normal">
               <label style="white-space: nowrap"
                      class="label">
-                Event Date              
+                Event Date
               </label>
             </div>
 
@@ -90,7 +92,8 @@
 
                 <div class="control">
                   <div class="select">
-                    <select id="filterEventDate">
+                    <select onchange="EventData.Event.GetList();"
+                            id="filterEventDate">
                       <option selected
                               value="7">
                         Last 7 Days
@@ -115,13 +118,13 @@
 
         </div>
       </nav>
-      <table class="table is-fullwidth">
+      <table class="table is-fullwidth is-striped">
         <thead>
           <tr>
-            <th style="width: 50%;">Event</th>
-            <th style="width: 15%;">Date</th>
-            <th style="width: 20%;">Time</th>
-            <th style="width: 15%;">Finished</th>
+            <th style="width: 40%;">Event</th>
+            <th style="width: 25%;">Location</th>
+            <th style="width: 25%;">Date/Time</th>
+            <th style="width: 10%;">Finished</th>
           </tr>
         </thead>
         <tbody id="eventList">
@@ -136,7 +139,7 @@
             <p class="modal-card-title">
               Add Attendance Information
             </p>
-            <button class="delete" 
+            <button class="delete"
                     aria-label="close"></button>
           </header>
           <section class="modal-card-body">
@@ -195,13 +198,10 @@
             <th style="width: 15%;"></th>
           </tr>
         </thead>
-        <tbody id="addEventList">
-
-        </tbody>
+        <tbody id="addEventList"></tbody>
         <tfoot>
           <tr>
-            <td colspan="4">
-            </td>
+            <td colspan="4"></td>
             <td>
               <button onclick="EventData.SaveEvent(); return false;"
                       class="button is-success"
@@ -219,8 +219,16 @@
       </table>
     </section>
   </div>
-  <script src="Scripts/app.js"></script>
+  <script src="Scripts/es6-promise.min.js"></script>
+  <script src="Scripts/XHR.js"></script>
+  <script src="Scripts/DataContainer.js"></script>
+  <script src="Scripts/TargetData.js"></script>
+  <script src="Scripts/UserAccess.js"></script>
   <script src="Scripts/Utilities.js"></script>
+  <script src="Scripts/Event.js"></script>
+  <script src="Scripts/Attendance.js"></script>
+  <script src="Scripts/app.js"></script>
+
   <script>
     document.addEventListener("DOMContentLoaded", function (event)
     {
