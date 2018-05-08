@@ -5,7 +5,7 @@ namespace EventData
 {
 
   export let Times: Array<string> = ['10:00 AM', '10:15 AM', '10:30 AM', '10:45 AM', '11:00 AM'];
-  export let Locations: Array<TargetData> = [];
+  export let Locations: Array<TargetData> = [{ Label: 'Orange Park Library', Value: '0' }, { Label: 'Keystone Heights Library', Value: '1' }];
   export let AddedEvents: Array<number> = []; // used for the Add Event functionality
   export let CurrentAccess: UserAccess = null;
 

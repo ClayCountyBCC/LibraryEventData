@@ -7,21 +7,19 @@
     event_date: Date;
     event_time_from: string;
     event_time_to: string;
-    location_id: number;
-    target_audience: Array<number>;
+    location_id: number;    
     attendance: Attendance;
 
   }
 
   export class Event implements IEvent
   {
-    public id: number;
+    public id: number = -1;
     public event_name: string;
     public event_date: Date;
     public event_time_from: string;
     public event_time_to: string;
     public location_id: number;
-    public target_audience: Array<number>;
     public attendance: Attendance = null;
 
     constructor()
@@ -83,10 +81,10 @@
         }
         tr.appendChild(Event.CreateEventListTextCell(e.event_name));
         let location = TargetData.GetTargetData(EventData.Locations, e.location_id.toString());        
-        tr.appendChild(Event.CreateEventListTextCell(location.Value));
+        tr.appendChild(Event.CreateEventListTextCell(location.Label));
         let eventDate = e.event_date.toLocaleDateString() + ' ' + e.event_time_from + ' - ' + e.event_time_to;
         tr.appendChild(Event.CreateEventListTextCell(eventDate));
-        tr.appendChild(Event.CreateEventListCheckboxCell(e.attendance === null));
+        tr.appendChild(Event.CreateEventListCheckboxCell(e.attendance !== null));
         eventList.appendChild(tr);
       }
 
@@ -105,6 +103,7 @@
       let label = document.createElement("label");
       label.classList.add("checkbox");
       let cb = document.createElement("input");
+      cb.type = "checkbox";
       cb.disabled = true;
       cb.checked = value;
       label.appendChild(cb);
@@ -118,6 +117,24 @@
       // this function will take the contents of the
       // event creation page and convert it into javascript
       // objects and send them to the Save URI.
+      let eventName = (<HTMLInputElement>document.getElementById("addEventName")).value;
+      let events: Array<Event> = [];
+      for (let i of EventData.AddedEvents)
+      {
+        let event = new Event();
+        event.event_name = eventName;
+        let location = (<HTMLSelectElement>document.getElementById("addLocation" + i)).selectedOptions[0].value;
+        event.location_id = parseInt(location);
+        let eventDate = (<HTMLInputElement>document.getElementById("addEventDate" + i)).value;
+        event.event_date = new Date(eventDate);
+        let from = (<HTMLSelectElement>document.getElementById("addEventFrom" + i)).selectedOptions[0].value;
+        let to = (<HTMLSelectElement>document.getElementById("addEventTo" + i)).selectedOptions[0].value;
+        event.event_time_from = from;
+        event.event_time_to = to;
+        // need to add validation
+        events.push(event);
+      }
+      Event.BuildEventList(events);
 
     }
 

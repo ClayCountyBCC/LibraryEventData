@@ -3,7 +3,7 @@
 var EventData;
 (function (EventData) {
     EventData.Times = ['10:00 AM', '10:15 AM', '10:30 AM', '10:45 AM', '11:00 AM'];
-    EventData.Locations = [];
+    EventData.Locations = [{ Label: 'Orange Park Library', Value: '0' }, { Label: 'Keystone Heights Library', Value: '1' }];
     EventData.AddedEvents = []; // used for the Add Event functionality
     EventData.CurrentAccess = null;
     function Start() {

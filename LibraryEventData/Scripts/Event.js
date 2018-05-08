@@ -2,6 +2,7 @@ var EventData;
 (function (EventData) {
     var Event = /** @class */ (function () {
         function Event() {
+            this.id = -1;
             this.attendance = null;
         }
         Event.GetList = function () {
@@ -45,10 +46,10 @@ var EventData;
                 };
                 tr.appendChild(Event.CreateEventListTextCell(e.event_name));
                 var location_1 = EventData.TargetData.GetTargetData(EventData.Locations, e.location_id.toString());
-                tr.appendChild(Event.CreateEventListTextCell(location_1.Value));
+                tr.appendChild(Event.CreateEventListTextCell(location_1.Label));
                 var eventDate = e.event_date.toLocaleDateString() + ' ' + e.event_time_from + ' - ' + e.event_time_to;
                 tr.appendChild(Event.CreateEventListTextCell(eventDate));
-                tr.appendChild(Event.CreateEventListCheckboxCell(e.attendance === null));
+                tr.appendChild(Event.CreateEventListCheckboxCell(e.attendance !== null));
                 eventList.appendChild(tr);
             };
             for (var _i = 0, events_1 = events; _i < events_1.length; _i++) {
@@ -66,6 +67,7 @@ var EventData;
             var label = document.createElement("label");
             label.classList.add("checkbox");
             var cb = document.createElement("input");
+            cb.type = "checkbox";
             cb.disabled = true;
             cb.checked = value;
             label.appendChild(cb);
@@ -77,6 +79,24 @@ var EventData;
             // this function will take the contents of the
             // event creation page and convert it into javascript
             // objects and send them to the Save URI.
+            var eventName = document.getElementById("addEventName").value;
+            var events = [];
+            for (var _i = 0, _a = EventData.AddedEvents; _i < _a.length; _i++) {
+                var i = _a[_i];
+                var event_1 = new Event();
+                event_1.event_name = eventName;
+                var location_2 = document.getElementById("addLocation" + i).selectedOptions[0].value;
+                event_1.location_id = parseInt(location_2);
+                var eventDate = document.getElementById("addEventDate" + i).value;
+                event_1.event_date = new Date(eventDate);
+                var from = document.getElementById("addEventFrom" + i).selectedOptions[0].value;
+                var to = document.getElementById("addEventTo" + i).selectedOptions[0].value;
+                event_1.event_time_from = from;
+                event_1.event_time_to = to;
+                // need to add validation
+                events.push(event_1);
+            }
+            Event.BuildEventList(events);
         };
         return Event;
     }());
