@@ -8,7 +8,7 @@ namespace LibraryEventData.Models
   public class TargetData
   {
 
-    public int Label { get; set; }
+    public string Label { get; set; }
     public string Value { get; set; }
 
     public TargetData()
@@ -25,57 +25,30 @@ namespace LibraryEventData.Models
       SELECT DISTINCT 'location' Label, [Location] Value
       FROM [dbo].[Location]";
 
-      try
-      {
-        return Constants.Get_Data<TargetData>(sql);
-      }
-      catch (Exception ex)
-      {
-        Constants.Log(ex, sql);
-        return new List<TargetData>();
-      }
+      return Constants.Get_Data<TargetData>(sql);
 
     }
 
     public static List<TargetData> GetEventTypesRaw()
     {
       string sql = @"
-        USE ClayEventData
+      USE ClayEventData
 
+      SELECT DISTINCT 'event_type' Label, Event_Type Value
+      FROM Event_Type";
 
-        SELECT DISTINCT 'event_type' Label, Event_Type Value
-        FROM Event_Type";
-
-      try
-      {
-        return Constants.Get_Data<TargetData>(sql);
-      }
-      catch(Exception ex)
-      {
-        Constants.Log(ex, sql);
-         return new List<TargetData>();
-      }
-      
+      return Constants.Get_Data<TargetData>(sql);
     }
 
     public static List<TargetData> GetTargetAudienceRaw()
     {
       string sql = @"
-        USE ClayEventData
+      USE ClayEventData
 
+      SELECT DISTINCT 'target_audience' Label, target_audience Value
+      FROM Target_Audience";
 
-        SELECT DISTINCT 'target_audience' Label, target_audience Value
-        FROM Target_Audience";
-
-      try
-      {
-        return Constants.Get_Data<TargetData>(sql);
-      }
-      catch (Exception ex)
-      {
-        Constants.Log(ex, sql);
-        return new List<TargetData>();
-      }
+      return Constants.Get_Data<TargetData>(sql);
     }
 
   }

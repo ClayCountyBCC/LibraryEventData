@@ -11,10 +11,12 @@ namespace LibraryEventData.Models
     public string name { get; set; }
     public DateTime event_date { get; set; }
     public DateTime event_time_from { get; set; }
+    public string event_time_from_string { get; set; }
     public DateTime event_time_to { get; set; }
+    public string event_time_to_string { get; set; }
     public int library_id{ get; set; }
     public List<string> age_groups { get; set; }
-    public AttendenceData manual_event_data { get; set; }
+    public Attendance manual_event_data { get; set; }
 
     public Event()
     {
@@ -39,8 +41,6 @@ namespace LibraryEventData.Models
         Constants.Log(ex, sql);
         return new List<Event>();
       }
-
-     
     }
 
 

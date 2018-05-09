@@ -100,7 +100,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AttendanceDataController.cs" />
     <Compile Include="Controllers\EventController.cs" />
-    <Compile Include="Controllers\TargetDataController.cs" />
+    <Compile Include="Controllers\InitialDataController.cs" />
     <Compile Include="Models\AttendenceData.cs" />
     <Compile Include="Models\Constants.cs" />
     <Compile Include="Models\DataContainer.cs" />

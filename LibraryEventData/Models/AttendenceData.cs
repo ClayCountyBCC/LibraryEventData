@@ -6,32 +6,33 @@ using Dapper;
 
 namespace LibraryEventData.Models
 {
-  public class AttendenceData
+  public class Attendance
   {
     public long event_id{ get; set; } // in case we want to pull more than one event at a time.
     public string event_type { get; set; }
-    public int number_youth { get; set; }
-    public int number_adult { get; set; }
+    public int youth_count { get; set; }
+    public int adult_count { get; set; }
     public string notes { get; set; }
 
-
-    public AttendenceData()
+    // When getting Event from client, it will always have attendance data
+    // If attendance data is 'empty', it will need to be null
+    public Attendance()
     {
       
     }
 
 
-    public static List<AttendenceData> GetEvenAttendenceDat(long event_id)
+    public static List<Attendance> GetEvenAttendenceDat(long event_id)
     {
 
-      return new List<AttendenceData>();
+      return new List<Attendance>();
     }
 
-    public static AttendenceData SaveAttendanceData(long event_id, AttendenceData data)
+    public static Attendance SaveAttendanceData(long event_id, Attendance data)
     {
 
       
-      return new AttendenceData();
+      return new Attendance();
     }
 
   }
