@@ -11,13 +11,7 @@ namespace LibraryEventData.Models
 {
   public static class Constants
   {
-    public const int appId = ;
-
-    public enum PaymentTypes: int
-    {
-      Building = 0,
-      Rescue = 1
-    }
+    public const int appId = 20020;
 
     public static bool UseProduction()
     {

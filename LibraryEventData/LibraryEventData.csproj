@@ -1,4 +1,5 @@
 ﻿<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
   <Import Project="..\packages\Microsoft.Net.Compilers.2.8.0\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.2.8.0\build\Microsoft.Net.Compilers.props')" />
   <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.8\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.8\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -24,6 +25,7 @@
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -33,6 +35,19 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <TypeScriptTarget>ES5</TypeScriptTarget>
+    <TypeScriptJSXEmit>None</TypeScriptJSXEmit>
+    <TypeScriptModuleKind />
+    <TypeScriptCompileOnSaveEnabled>True</TypeScriptCompileOnSaveEnabled>
+    <TypeScriptNoImplicitAny>False</TypeScriptNoImplicitAny>
+    <TypeScriptRemoveComments>False</TypeScriptRemoveComments>
+    <TypeScriptOutFile />
+    <TypeScriptOutDir />
+    <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
+    <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>
+    <TypeScriptSourceMap>True</TypeScriptSourceMap>
+    <TypeScriptMapRoot />
+    <TypeScriptSourceRoot />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -84,6 +99,75 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="bower.json" />
+    <None Include="bower_components\bulma\.bower.json" />
+    <None Include="bower_components\bulma\BACKERS.md" />
+    <None Include="bower_components\bulma\bower.json" />
+    <None Include="bower_components\bulma\bulma.sass" />
+    <None Include="bower_components\bulma\CHANGELOG.md" />
+    <None Include="bower_components\bulma\css\bulma.css.map" />
+    <None Include="bower_components\bulma\LICENSE" />
+    <None Include="bower_components\bulma\package.json" />
+    <None Include="bower_components\bulma\README.md" />
+    <None Include="bower_components\bulma\sass\base\generic.sass" />
+    <None Include="bower_components\bulma\sass\base\helpers.sass" />
+    <None Include="bower_components\bulma\sass\base\minireset.sass" />
+    <None Include="bower_components\bulma\sass\base\_all.sass" />
+    <None Include="bower_components\bulma\sass\components\breadcrumb.sass" />
+    <None Include="bower_components\bulma\sass\components\card.sass" />
+    <None Include="bower_components\bulma\sass\components\dropdown.sass" />
+    <None Include="bower_components\bulma\sass\components\level.sass" />
+    <None Include="bower_components\bulma\sass\components\media.sass" />
+    <None Include="bower_components\bulma\sass\components\menu.sass" />
+    <None Include="bower_components\bulma\sass\components\message.sass" />
+    <None Include="bower_components\bulma\sass\components\modal.sass" />
+    <None Include="bower_components\bulma\sass\components\navbar.sass" />
+    <None Include="bower_components\bulma\sass\components\pagination.sass" />
+    <None Include="bower_components\bulma\sass\components\panel.sass" />
+    <None Include="bower_components\bulma\sass\components\tabs.sass" />
+    <None Include="bower_components\bulma\sass\components\_all.sass" />
+    <None Include="bower_components\bulma\sass\elements\box.sass" />
+    <None Include="bower_components\bulma\sass\elements\button.sass" />
+    <None Include="bower_components\bulma\sass\elements\container.sass" />
+    <None Include="bower_components\bulma\sass\elements\content.sass" />
+    <None Include="bower_components\bulma\sass\elements\form.sass" />
+    <None Include="bower_components\bulma\sass\elements\icon.sass" />
+    <None Include="bower_components\bulma\sass\elements\image.sass" />
+    <None Include="bower_components\bulma\sass\elements\notification.sass" />
+    <None Include="bower_components\bulma\sass\elements\other.sass" />
+    <None Include="bower_components\bulma\sass\elements\progress.sass" />
+    <None Include="bower_components\bulma\sass\elements\table.sass" />
+    <None Include="bower_components\bulma\sass\elements\tag.sass" />
+    <None Include="bower_components\bulma\sass\elements\title.sass" />
+    <None Include="bower_components\bulma\sass\elements\_all.sass" />
+    <None Include="bower_components\bulma\sass\grid\columns.sass" />
+    <None Include="bower_components\bulma\sass\grid\tiles.sass" />
+    <None Include="bower_components\bulma\sass\grid\_all.sass" />
+    <None Include="bower_components\bulma\sass\layout\footer.sass" />
+    <None Include="bower_components\bulma\sass\layout\hero.sass" />
+    <None Include="bower_components\bulma\sass\layout\section.sass" />
+    <None Include="bower_components\bulma\sass\layout\_all.sass" />
+    <None Include="bower_components\bulma\sass\utilities\animations.sass" />
+    <None Include="bower_components\bulma\sass\utilities\controls.sass" />
+    <None Include="bower_components\bulma\sass\utilities\derived-variables.sass" />
+    <None Include="bower_components\bulma\sass\utilities\functions.sass" />
+    <None Include="bower_components\bulma\sass\utilities\initial-variables.sass" />
+    <None Include="bower_components\bulma\sass\utilities\mixins.sass" />
+    <None Include="bower_components\bulma\sass\utilities\_all.sass" />
+    <None Include="bower_components\bulma\yarn.lock" />
+    <None Include="bundleconfig.json" />
+    <None Include="compilerconfig.json" />
+    <None Include="compilerconfig.json.defaults">
+      <DependentUpon>compilerconfig.json</DependentUpon>
+    </None>
+    <Content Include="ConnectionStrings.config" />
+    <Content Include="Content\Utilities.css">
+      <DependentUpon>Utilities.scss</DependentUpon>
+    </Content>
+    <Content Include="Content\Utilities.min.css">
+      <DependentUpon>Utilities.css</DependentUpon>
+    </Content>
+    <Content Include="Content\Utilities.scss" />
     <None Include="packages.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -93,13 +177,21 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <None Include="bower_components\bulma\css\bulma.css" />
+    <None Include="bower_components\bulma\css\bulma.min.css" />
+    <Content Include="Content\bulma.css" />
+    <Content Include="Content\bulma.min.css">
+      <DependentUpon>bulma.css</DependentUpon>
+    </Content>
     <Content Include="index.html" />
+    <Content Include="Scripts\es6-promise.min.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Models\AttendenceData.cs" />
     <Compile Include="Models\Constants.cs" />
+    <Compile Include="Models\DataContainer.cs" />
     <Compile Include="Models\ErrorLog.cs" />
     <Compile Include="Models\Event.cs" />
     <Compile Include="Models\myCache.cs" />
@@ -109,15 +201,28 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Content\" />
     <Folder Include="Controllers\" />
-    <Folder Include="Scripts\" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="Scripts\app.ts" />
+    <TypeScriptCompile Include="Scripts\Attendance.ts" />
+    <TypeScriptCompile Include="Scripts\DataContainer.ts" />
+    <TypeScriptCompile Include="Scripts\Event.ts" />
+    <TypeScriptCompile Include="Scripts\TargetData.ts" />
+    <TypeScriptCompile Include="Scripts\typings\es6-promise\es6-promise.d.ts" />
+    <TypeScriptCompile Include="Scripts\UserAccess.ts" />
+    <TypeScriptCompile Include="Scripts\Utilities.ts" />
+    <TypeScriptCompile Include="Scripts\XHR.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
   <ProjectExtensions>
@@ -145,8 +250,10 @@
     <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.8\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.8\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
     <Error Condition="!Exists('..\packages\BuildBundlerMinifier.2.6.375\build\BuildBundlerMinifier.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\BuildBundlerMinifier.2.6.375\build\BuildBundlerMinifier.targets'))" />
     <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.2.8.0\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.2.8.0\build\Microsoft.Net.Compilers.props'))" />
+    <Error Condition="!Exists('..\packages\BuildWebCompiler.1.11.375\build\BuildWebCompiler.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\BuildWebCompiler.1.11.375\build\BuildWebCompiler.targets'))" />
   </Target>
   <Import Project="..\packages\BuildBundlerMinifier.2.6.375\build\BuildBundlerMinifier.targets" Condition="Exists('..\packages\BuildBundlerMinifier.2.6.375\build\BuildBundlerMinifier.targets')" />
+  <Import Project="..\packages\BuildWebCompiler.1.11.375\build\BuildWebCompiler.targets" Condition="Exists('..\packages\BuildWebCompiler.1.11.375\build\BuildWebCompiler.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
