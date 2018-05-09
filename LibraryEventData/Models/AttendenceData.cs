@@ -22,7 +22,7 @@ namespace LibraryEventData.Models
     }
 
 
-    public static List<Attendance> GetEvenAttendenceDat(long event_id)
+    public static List<Attendance> GetEvenAttendenceData(long event_id)
     {
 
       return new List<Attendance>();
