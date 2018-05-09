@@ -13,6 +13,13 @@ namespace LibraryEventData.Models
   {
     public const int appId = 20020;
 
+    public enum PaymentTypes: int
+    {
+      Building = 0,
+      Rescue = 1
+    }
+
+
     public static bool UseProduction()
     {
       switch (Environment.MachineName.ToUpper())
