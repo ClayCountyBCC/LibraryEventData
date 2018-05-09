@@ -42,9 +42,8 @@ namespace LibraryEventData.Models
         return new List<Event>();
       }
     }
-
-
-    public static List<Event> GetEvenAttendenceDat(long event_id)
+    
+    public static List<Event> GetEvents(long event_id = -1)
     {
       
       return new List<Event>();

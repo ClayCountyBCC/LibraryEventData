@@ -53,6 +53,7 @@ namespace LibraryEventData.Models
           return TargetData.GetLocationsRaw();
         case "target_audience":
           return TargetData.GetTargetAudienceRaw();
+
         default:
           return null;
       }

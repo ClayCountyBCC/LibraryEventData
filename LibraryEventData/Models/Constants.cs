@@ -19,6 +19,7 @@ namespace LibraryEventData.Models
       Rescue = 1
     }
 
+
     public static bool UseProduction()
     {
       switch (Environment.MachineName.ToUpper())

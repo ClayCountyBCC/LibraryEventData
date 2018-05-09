@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -7,6 +7,7 @@ using System.Web.Http;
 using LibraryEventData.Models;
 using System.Runtime.Caching;
 
+using System.Web;
 
 namespace LibraryEventData.Models
 {
@@ -17,7 +18,7 @@ namespace LibraryEventData.Models
     public List<TargetData> Target_Audiences { get; set; }
     public UserAccess CurrentAccess { get; set; }
     public List<string> Times 
-    { 
+
       get
       {
         List<string> times = new List<string>();

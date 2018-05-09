@@ -49,6 +49,7 @@ namespace LibraryEventData.Models
       FROM Target_Audience";
 
       return Constants.Get_Data<TargetData>(sql);
+
     }
 
   }
