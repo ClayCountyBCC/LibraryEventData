@@ -17,8 +17,8 @@ namespace LibraryEventData.Models
     public List<TargetData> Locations { get; set; }
     public List<TargetData> Target_Audiences { get; set; }
     public UserAccess CurrentAccess { get; set; }
-    public List<string> Times 
-
+    public List<string> Times
+    {
       get
       {
         List<string> times = new List<string>();
@@ -36,12 +36,20 @@ namespace LibraryEventData.Models
     }
     public DataContainer(string username)
     {
-      var CIP = new CacheItemPolicy() { AbsoluteExpiration = DateTime.Today.AddDays(1) };
+      try
+      {
+        var CIP = new CacheItemPolicy() { AbsoluteExpiration = DateTime.Today.AddDays(1) };
 
-      this.Locations = (List<TargetData>)MyCache.GetItem("locations", CIP);
-      this.Event_Types = (List<TargetData>)MyCache.GetItem("event_types", CIP);
-      this.Target_Audiences = (List<TargetData>)MyCache.GetItem("target_audience", CIP);
-      this.CurrentAccess = UserAccess.GetUserAccess(username);
+        this.Locations = (List<TargetData>)MyCache.GetItem("locations", CIP);
+        this.Event_Types = (List<TargetData>)MyCache.GetItem("event_types", CIP);
+        this.Target_Audiences = (List<TargetData>)MyCache.GetItem("target_audience", CIP);
+        this.CurrentAccess = new UserAccess(username);//UserAccess.GetUserAccess(username);
+      }
+      catch(Exception ex)
+      {
+        new ErrorLog(ex);
+      }
+
     }
 
   }

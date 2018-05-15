@@ -4,17 +4,17 @@
 namespace EventData
 {
 
-  export let Times: Array<string> = ['10:00 AM', '10:15 AM', '10:30 AM', '10:45 AM', '11:00 AM'];
-  export let Locations: Array<TargetData> = [{ Label: 'Orange Park Library', Value: '0' }, { Label: 'Keystone Heights Library', Value: '1' }];
+  export let Times: Array<string> = [];
+  export let Locations: Array<TargetData> = [];
   export let AddedEvents: Array<number> = []; // used for the Add Event functionality
   export let CurrentAccess: UserAccess = null;
 
   export function Start():void
   {
     
-    ResetAddEvent();
+    
     // Uncomment this when the end points are working.
-    // GetInitialData();
+    GetInitialData();
   }
 
   function GetInitialData()
@@ -22,29 +22,85 @@ namespace EventData
     DataContainer.Get().then(
       function (dc)
       {
+        console.log('dc', dc);
+        CurrentAccess = dc.CurrentAccess;
         Times = dc.Times;
         Locations = dc.Locations;
-        PopulateUIElements(dc.Event_Types, dc.Target_Audiences);
-        CurrentAccess = dc.CurrentAccess;        
+        console.log('populateuieelements');
+        PopulateUIElements(dc.Event_Types, dc.Target_Audiences, dc.Locations, Times);
+        HandleUserAccess();
+
       }).catch(function (error)
       {
         // Notify of error.  If this happens, the app is basically unusable.
       });
   }
 
-  function PopulateUIElements(EventTypes: Array<TargetData>, TargetAudiences: Array<TargetData>)
+  function HandleUserAccess()
   {
-    let etSelect = <HTMLSelectElement>document.getElementById("selectEventType");
-    let taSelect = <HTMLSelectElement>document.getElementById("selectTargetAudience");
-    PopulateSelect(etSelect, EventTypes);
-    PopulateSelect(taSelect, TargetAudiences);
+    // The default setup of the HTML page is for the appropriate fields
+    // to be disabled based on most users only having Edit access.
+    // So here we are going to check for admin access and enable the fields
+    // and show the Add Event option.
+    if (CurrentAccess.current_access === access_type.admin_access)
+    {
+      let addEvent = document.getElementById("addEvent");
+      addEvent.classList.remove("hide"); // we remove this so that Bulma will take over the display.
+      let selectLocation = <HTMLSelectElement>document.getElementById("selectLocation");
+      let selectTimeFrom = <HTMLSelectElement>document.getElementById("selectTimeFrom");
+      let selectTimeTo = <HTMLSelectElement>document.getElementById("selectTimeTo");
+      let eventDate = <HTMLInputElement>document.getElementById("eventDate");
+      let eventName = <HTMLInputElement>document.getElementById("eventName");
+      selectLocation.disabled = false;
+      selectTimeFrom.disabled = false;
+      selectTimeTo.disabled = false;
+      eventDate.disabled = false;
+      eventName.disabled = false;
+      Event.ResetAddEvent();
+    }
   }
 
-  function PopulateSelect(e: HTMLSelectElement, data: Array<TargetData>)
+  function PopulateUIElements(EventTypes: Array<TargetData>,
+    TargetAudiences: Array<TargetData>,
+    Locations: Array<TargetData>,
+    Times: Array<string>)
   {
+    // this is a filter
+    let locFilter = <HTMLSelectElement>document.getElementById("filterLocation");
+    // these are on the add Attendance menu
+    let etSelect = <HTMLSelectElement>document.getElementById("selectEventType");
+    let taSelect = <HTMLSelectElement>document.getElementById("selectTargetAudience");
+    // this one will only be enabled if the user has admin access.
+    let locSelect = <HTMLSelectElement>document.getElementById("selectLocation");
+    let timeFrom = <HTMLSelectElement>document.getElementById("selectTimeFrom");
+    let timeTo = <HTMLSelectElement>document.getElementById("selectTimeTo");
+
+    PopulateSelect(etSelect, EventTypes);
+    PopulateSelect(taSelect, TargetAudiences);
+    PopulateSelect(locFilter, Locations);
+    PopulateSelect(locSelect, Locations);
+    PopulateSelect(timeFrom, Times);
+    PopulateSelect(timeTo, Times);
+
+  }
+
+  function PopulateSelect(e: HTMLSelectElement, data: Array<string>)
+  function PopulateSelect(e: HTMLSelectElement, data: Array<TargetData>)
+  function PopulateSelect(e: HTMLSelectElement, data: Array<any>)
+  {
+    if (e === null || e === undefined) return;
+    let UseString = (typeof data[0] == "string");    
     for (let d of data)
     {
-      e.add(Utilities.Create_Option(d.Value, d.Label));
+      if (UseString)
+      {
+        e.add(Utilities.Create_Option(d, d));
+      }
+      else
+      {
+        e.add(Utilities.Create_Option(d.Value, d.Label));
+      }
+      
     }
   }
 
@@ -68,140 +124,5 @@ namespace EventData
     }
   }
 
-  export function ResetAddEvent():void
-  {
-    // This function puts the Add Event page in its initial state
-    // no matter it's current state.
-    let eventName = <HTMLInputElement>document.getElementById("addEventName");
-    eventName.value = "";
-    let addEventContainer = document.getElementById("addEventList");
-    Utilities.Clear_Element(addEventContainer);
-    AddedEvents = [];
-    AddEventRow();
-  }
-
-
-
-  export function AddEventRow():void
-  {
-    let id = 1;
-    let ae = EventData.AddedEvents;
-    if (ae.length > 0) id = ae[ae.length - 1] + 1; // add one to the last id added.
-    EventData.AddedEvents.push(id);
-    let container = <HTMLTableSectionElement>document.getElementById("addEventList");
-    container.appendChild(CreateRow(id));
-  }
-
-  function CreateRow(id: number): HTMLTableRowElement
-  {
-    let tr = document.createElement("tr");
-    tr.id = "eventRow" + id.toString();
-    tr.appendChild(CreateLocationElement(id));
-    tr.appendChild(CreateEventDateElement(id));
-    tr.appendChild(CreateEventTimeElement(id, "addEventFrom", "Event From"));
-    tr.appendChild(CreateEventTimeElement(id, "addEventTo", "Event To"));
-    tr.appendChild(CreateRemoveEventButton(id));
-    return tr;
-  }
-
-  function CreateLocationElement(id: number): HTMLTableCellElement
-  {
-    let td = document.createElement("td");
-    let field = document.createElement("div");
-    field.classList.add("field")
-    let control = document.createElement("div");
-    control.classList.add("control");
-    let selectContainer = document.createElement("div");
-    selectContainer.classList.add("select");
-    let location = <HTMLSelectElement>document.createElement("select");
-    location.add(Utilities.Create_Option("-1", "Select Location", true));
-    location.id = "addLocation" + id.toString();
-    for (let l of Locations)
-    {
-      location.add(Utilities.Create_Option(l.Value, l.Label));
-    }
-    selectContainer.appendChild(location);
-    control.appendChild(selectContainer);
-    field.appendChild(control);
-    td.appendChild(field);
-    return td;
-  }
-
-  function CreateEventDateElement(id: number): HTMLTableCellElement
-  {
-    let td = document.createElement("td");
-    let field = document.createElement("div");
-    field.classList.add("field")
-    let control = document.createElement("div");
-    control.classList.add("control");
-    let eventDate = document.createElement("input");
-    eventDate.classList.add("input");
-    eventDate.type = "date";
-    eventDate.id = "addEventDate" + id.toString();
-    control.appendChild(eventDate);
-    field.appendChild(control);
-    td.appendChild(field);
-    return td;
-  }
-
-  function CreateEventTimeElement(id: number, name: string, initialValue: string): HTMLTableCellElement
-  {
-    let td = document.createElement("td");
-    let field = document.createElement("div");
-    field.classList.add("field")
-    let control = document.createElement("div");
-    control.classList.add("control");
-    let selectContainer = document.createElement("div");
-    selectContainer.classList.add("select");
-    let eventTime = <HTMLSelectElement>document.createElement("select");
-    eventTime.add(Utilities.Create_Option("", initialValue, true));
-    eventTime.id = name + id.toString();
-    for (let t of Times)
-    {
-      eventTime.add(Utilities.Create_Option(t, t));
-    }
-    selectContainer.appendChild(eventTime);
-    control.appendChild(selectContainer);
-    field.appendChild(control);
-    td.appendChild(field);
-    return td;
-  }
-
-  function CreateRemoveEventButton(id: number):HTMLTableCellElement
-  {
-    let td = document.createElement("td");
-    let field = document.createElement("div");
-    field.classList.add("field")
-    let control = document.createElement("div");
-    control.classList.add("control");
-    let remove = document.createElement("button");
-    remove.classList.add("button");
-    remove.classList.add("is-warning");
-    remove.type = "button";
-    remove.appendChild(document.createTextNode("Remove"));
-    if (id === 1) remove.disabled = true;
-    remove.onclick = function ()
-    {
-      RemoveEventRow(id);
-    }
-    control.appendChild(remove);
-    field.appendChild(control);
-    td.appendChild(field);
-    return td;
-  }
-
-  export function RemoveEventRow(id: number): void
-  {
-    let e = document.getElementById("eventRow" + id.toString());
-    e.parentNode.removeChild(e);
-    let i = EventData.AddedEvents.indexOf(id);
-    if (i > -1) EventData.AddedEvents.splice(i, 1);
-    console.log(EventData.AddedEvents);
-  }
-
-  export function SaveEvent():void
-  {
-
-  }
 
 }

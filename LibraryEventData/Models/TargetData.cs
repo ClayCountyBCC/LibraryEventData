@@ -22,7 +22,7 @@ namespace LibraryEventData.Models
       
       USE ClayEventData
       
-      SELECT DISTINCT 'location' Label, [Location] Value
+      SELECT id Value, [Location] Label
       FROM [dbo].[Location]";
 
       return Constants.Get_Data<TargetData>(sql);
@@ -34,7 +34,7 @@ namespace LibraryEventData.Models
       string sql = @"
       USE ClayEventData
 
-      SELECT DISTINCT 'event_type' Label, Event_Type Value
+      SELECT id Value, Event_Type Label
       FROM Event_Type";
 
       return Constants.Get_Data<TargetData>(sql);
@@ -45,7 +45,7 @@ namespace LibraryEventData.Models
       string sql = @"
       USE ClayEventData
 
-      SELECT DISTINCT 'target_audience' Label, target_audience Value
+      SELECT id Value, target_audience Label
       FROM Target_Audience";
 
       return Constants.Get_Data<TargetData>(sql);

@@ -12,23 +12,16 @@ namespace LibraryEventData.Models
   public static class Constants
   {
     public const int appId = 20020;
-
-    public enum PaymentTypes: int
-    {
-      Building = 0,
-      Rescue = 1
-    }
-
-
     public static bool UseProduction()
     {
       switch (Environment.MachineName.ToUpper())
       {
         case "CLAYBCCDV10":
-        case "MISSL01":
+        
           // Test Environment Machines
           return false;
 
+        case "MISSL01":
         case "CLAYBCCIIS01":
         case "CLAYBCCDMZIIS01":
           // will need to add the DMZ machine name(s) here.
@@ -46,7 +39,7 @@ namespace LibraryEventData.Models
       {
         using (IDbConnection db =
           new SqlConnection(
-            Get_ConnStr("WATSC" + (UseProduction() ? "Prod" : "QA"))))
+            Get_ConnStr("EventData" + (UseProduction() ? "Prod" : "QA"))))
         {
           return (List<T>)db.Query<T>(query);
         }
@@ -64,7 +57,7 @@ namespace LibraryEventData.Models
       {
         using (IDbConnection db =
           new SqlConnection(
-            Get_ConnStr("WATSC" + (UseProduction() ? "Prod" : "QA"))))
+            Get_ConnStr("EventData" + (UseProduction() ? "Prod" : "QA"))))
         {
           return (List<T>)db.Query<T>(query, new { ids });
         }
@@ -82,7 +75,7 @@ namespace LibraryEventData.Models
       {
         using (IDbConnection db =
           new SqlConnection(
-            Get_ConnStr("WATSC" + (UseProduction() ? "Prod" : "QA"))))
+            Get_ConnStr("EventData" + (UseProduction() ? "Prod" : "QA"))))
         {
           return (List<T>)db.Query<T>(query, dbA);
         }
@@ -100,7 +93,7 @@ namespace LibraryEventData.Models
       {
         using (IDbConnection db =
           new SqlConnection(
-            Get_ConnStr("WATSC" + (UseProduction() ? "Prod" : "QA"))))
+            Get_ConnStr("EventData" + (UseProduction() ? "Prod" : "QA"))))
         {
           return db.Execute(query, dbA);
         }
@@ -116,7 +109,7 @@ namespace LibraryEventData.Models
     {
       try
       {
-        using (IDbConnection db = new SqlConnection(Get_ConnStr("Printing")))
+        using (IDbConnection db = new SqlConnection(Get_ConnStr("EventData" + (UseProduction() ? "Prod" : "QA"))))
         {
           db.Execute(insertQuery, item);
           return true;

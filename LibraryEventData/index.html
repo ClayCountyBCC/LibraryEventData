@@ -23,7 +23,8 @@
              onclick="EventData.View('ViewEvents');">
             View Events
           </a>
-          <a class="navbar-item"
+          <a id="addEvent"
+             class="navbar-item hide"
              onclick="EventData.View('AddEvent');">
             Add Event
           </a>
@@ -39,11 +40,11 @@
            class="level box">
         <div class="level-item">
           <label class="checkbox">
-            <input id="filterCompleted"
+            <input id="filterInComplete"
                    onchange="EventData.Event.GetList();"
                    checked
                    type="checkbox" />
-            Show Completed Only
+            Show InComplete Only
           </label>
         </div>
         <div class="level-item">
@@ -66,9 +67,6 @@
                               value="-1">
                         All Locations
                       </option>
-                      <option>Orange Park Library</option>
-                      <option>Middleburg Library</option>
-                      <option>Other Libraries</option>
                     </select>
                   </div>
                 </div>
@@ -133,29 +131,128 @@
       </table>
       <div class="modal"
            id="addAttendance">
-        <div class="modal-background"></div>
+        <div onclick="EventData.Attendance.CloseModal();"
+             class="modal-background"></div>
         <div class="modal-card">
           <header class="modal-card-head">
             <p class="modal-card-title">
-              Add Attendance Information
+              Add Event Attendance
             </p>
-            <button class="delete"
+            <button onclick="EventData.Attendance.CloseModal();"
+                    type="button"
+                    class="delete"
                     aria-label="close"></button>
           </header>
           <section class="modal-card-body">
-            Show Selected Event Name / Location / Date from-through
-            Select Event Type
-            Select Target Audience
-            Select Event Age Groups
-            Enter Number of Youths
-            Enter Number of Adults
-            Add Notes
+
+            <div class="field is-horizontal">
+              <div class="field-label is-normal">
+                <label class="label">Event Name</label>
+              </div>
+              <div class="field-body">
+                <div class="field is-grouped">
+                  <div class="control is-expanded">
+                    <input type="text"
+                           class="input"
+                           id="eventName" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="field is-grouped columns">
+              <div class="field column">
+                <label class="label">Location</label>
+                <div class="control">
+                  <div class="select">
+                    <select disabled
+                            id="selectLocation"></select>
+                  </div>
+                </div>
+              </div>
+              <div class="field column">
+                <label class="label">Event Date</label>
+                <div class="control">
+                  <input class="input"
+                         type="date"
+                         id="eventDate" />
+                </div>
+              </div>
+            </div>
+            <div class="field is-grouped columns">
+              <div class="field column">
+                <label class="label">Time From</label>
+                <div class="control">
+                  <div class="select">
+                    <select disabled
+                            id="selectTimeFrom"></select>
+                  </div>
+                </div>
+              </div>
+              <div class="field column">
+                <label class="label">Time To</label>
+                <div class="control">
+                  <div class="select">
+                    <select disabled
+                            id="selectTimeTo"></select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="field is-grouped columns">
+              <div class="field column">
+                <label class="label">Event Type</label>
+                <div class="control">
+                  <div class="select">
+                    <select id="selectEventType"></select>
+                  </div>
+                </div>
+              </div>
+              <div class="field column">
+                <label class="label">Target Audience</label>
+                <div class="control">
+                  <div class="select">
+                    <select id="selectTargetAudience"></select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="field is-grouped columns">
+              <div class="field column">
+                <label class="label"># Youths Attending</label>
+                <div class="control">
+                  <input class="input"
+                         type="number"
+                         id="selectYouthCount"
+                         placeholder="0" />
+                </div>
+              </div>
+              <div class="field column">
+                <label class="label"># Adults Attending</label>
+                <div class="control">
+                  <input class="input"
+                         type="number"
+                         id="selectAdultCount"
+                         placeholder="0" />
+                </div>
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">Add any notes here</label>
+              <div class="control">
+                <textarea class="textarea"
+                          rows="2"
+                          id="eventNotes"></textarea>
+
+              </div>
+            </div>
           </section>
           <footer class="modal-card-foot">
             <button class="button is-success">
-              Save changes
+              Save Changes
             </button>
-            <button class="button">
+            <button type="button"
+                    onclick="EventData.Attendance.CloseModal();"
+                    class="button">
               Cancel
             </button>
           </footer>
@@ -179,7 +276,7 @@
                      placeholder="The Event Name or Title" />
             </div>
             <div class="control">
-              <button onclick="EventData.AddEventRow();"
+              <button onclick="EventData.Event.AddEventRow();"
                       type="button"
                       class="button is-primary">
                 Add Event Date/Location
@@ -208,7 +305,7 @@
                       type="button">
                 Save Events
               </button>
-              <button onclick="EventData.ResetAddEvent(); return false;"
+              <button onclick="EventData.Event.ResetAddEvent(); return false;"
                       class="button is-warning"
                       type="button">
                 Reset

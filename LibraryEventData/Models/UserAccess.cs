@@ -10,6 +10,7 @@ namespace LibraryEventData.Models
   {
     private const string event_admin_group = ""; // We may make this an argument if we end up using this code elsewhere.
     private const string event_edit_group = "";
+    private const string mis_access_group = "gICT";
     
     public bool authenticated { get; set; } = false;
     public string user_name { get; set; }
@@ -71,7 +72,7 @@ namespace LibraryEventData.Models
           }
           var groups = (from g in up.GetAuthorizationGroups()
                         select g.Name).ToList();
-          if(groups.Contains(event_admin_group))
+          if(groups.Contains(event_admin_group) || groups.Contains(mis_access_group))
           {
             current_access = access_type.admin_access;
           }

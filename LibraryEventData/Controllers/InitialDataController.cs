@@ -9,21 +9,23 @@ using LibraryEventData.Models;
 
 namespace LibraryEventData.Controllers
 {
-  public class TargetDataController : ApiController
+  public class InitialDataController : ApiController
   {
 
     public IHttpActionResult Get()
     {
-
-      var targetDataList = new DataContainer(User.Identity.Name);
-      if (targetDataList == null)
+      try
       {
+        var dc = new DataContainer(User.Identity.Name);
+        return Ok(dc);
+      }
+      catch(Exception ex)
+      {
+        new ErrorLog(ex);
         return InternalServerError();
       }
-      else
-      {
-        return Ok(targetDataList);
-      }
+
+
     }
   }
 }

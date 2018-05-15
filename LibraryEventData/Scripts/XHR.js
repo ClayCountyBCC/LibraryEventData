@@ -144,4 +144,4 @@ var XHR;
     }
     XHR.SaveObject = SaveObject;
 })(XHR || (XHR = {}));
-//# sourceMappingURL=XHR.js.map
+//# sourceMappingURL=xhr.js.map

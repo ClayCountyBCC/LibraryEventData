@@ -13,7 +13,7 @@
     user_name: string;
     employee_id: number;
     display_name: string;
-    access_type: access_type;
+    current_access: access_type;
   }
 
   export class UserAccess implements IUserAccess
@@ -22,7 +22,7 @@
     public user_name: string;
     public employee_id: number;
     public display_name: string;
-    public access_type: access_type;
+    public current_access: access_type;
 
     constructor()
     {

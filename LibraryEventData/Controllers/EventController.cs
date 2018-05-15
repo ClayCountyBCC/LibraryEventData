@@ -11,7 +11,12 @@ namespace LibraryEventData.Controllers
 {
   public class EventController : ApiController
   {
-    public IHttpActionResult Get()
+    public IHttpActionResult GetList(Boolean InCompleteOnly = false, int EventDate = 7, int Location = -1)
+    {
+      return Ok();
+    }
+
+    public IHttpActionResult Get(int id)
     {
       var ua = UserAccess.GetUserAccess(User.Identity.Name);
       var events = Event.GetEventsRaw();
@@ -28,7 +33,7 @@ namespace LibraryEventData.Controllers
     }
     public IHttpActionResult Save(List<Event> newEvents)
     {
-      if (newEvents.Count > 0)
+      if (newEvents.Count == 0)
       {
         return InternalServerError();
 

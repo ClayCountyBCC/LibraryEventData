@@ -25,7 +25,7 @@
 
     public static Get() : Promise<DataContainer>
     {
-      return XHR.GetObject("./API/DataContainer");
+      return XHR.GetObject("./API/InitialData");
     }
 
   }

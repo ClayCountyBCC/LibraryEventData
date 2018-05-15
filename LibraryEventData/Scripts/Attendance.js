@@ -12,6 +12,15 @@ var EventData;
             // attendance page and create an attendance object,
             // and then send that object to the Save Attendance end point.
         };
+        Attendance.CloseModal = function () {
+            var modals = document.querySelectorAll(".modal");
+            if (modals.length > 0) {
+                for (var i = 0; i < modals.length; i++) {
+                    var modal = modals.item(i);
+                    modal.classList.remove("is-active");
+                }
+            }
+        };
         return Attendance;
     }());
     EventData.Attendance = Attendance;

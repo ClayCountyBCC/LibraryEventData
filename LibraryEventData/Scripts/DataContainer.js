@@ -4,7 +4,7 @@ var EventData;
         function DataContainer() {
         }
         DataContainer.Get = function () {
-            return XHR.GetObject("./API/DataContainer");
+            return XHR.GetObject("./API/InitialData");
         };
         return DataContainer;
     }());
