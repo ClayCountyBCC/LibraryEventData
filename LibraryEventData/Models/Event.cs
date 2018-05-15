@@ -61,14 +61,13 @@ namespace LibraryEventData.Models
       var query =
           new SqlConnection(
             Constants.Get_ConnStr());
-      var events = query.Query<Event, Attendance>(
+      var events = query.Query<Event, Attendance, Event>(
         sql,
-        map: (e,a) => {
-          e.Event = e;
-          a.Attendance = a;
+        map: (e,a) => {          
+          e.attendance = a;
           return e;
         },
-        splitOn: "id, event_id"
+        splitOn: "event_id"
       );
 
 
