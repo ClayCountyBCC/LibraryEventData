@@ -22,17 +22,36 @@ namespace LibraryEventData.Models
     }
 
 
-    public static List<Attendance> GetEvenAttendenceData(long event_id)
+    public static Attendance GetEventAttendenceData(long event_id)
     {
+      var dbArgs = new Dapper.DynamicParameters();
+      dbArgs.Add("@event_id", event_id);
+      string sql = @"
+        USE ClayEventData;
+      
+        SELECT
 
-      return new List<Attendance>();
+        FROM [Attendance]
+        WHERE event_id = @event_id
+        ";
+
+      try
+      {
+        var check = Constants.Get_Data<Attendance>(sql);
+        return check.First();
+      }
+      catch (Exception ex)
+      {
+        Constants.Log(ex, sql);
+        return new Attendance();
+      }
     }
 
     public static Attendance SaveAttendanceData(long event_id, Attendance data)
     {
 
       
-      return new Attendance();
+      return new List<Attendance>();
     }
 
   }

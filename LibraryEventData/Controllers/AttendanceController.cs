@@ -7,7 +7,7 @@ using System.Web.Http;
 
 namespace LibraryEventData.Controllers
 {
-    public class AttendanceDataController : ApiController
+    public class AttendanceController : ApiController
     {
         // GET: api/AttendanceData
         public IEnumerable<string> Get()

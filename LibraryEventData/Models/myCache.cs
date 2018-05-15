@@ -14,7 +14,7 @@ namespace LibraryEventData.Models
     public static object GetItem(string key)
     {
       var CIP = new CacheItemPolicy();
-      CIP.AbsoluteExpiration = DateTime.Now.AddHours(4);
+      //
       return GetOrAddExisting(key, () => InitItem(key), CIP);
     }
 
@@ -27,7 +27,7 @@ namespace LibraryEventData.Models
     {
 
       Lazy<T> newValue = new Lazy<T>(valueFactory);
-      var oldValue = _cache.AddOrGetExisting(key, newValue, CIP) as Lazy<T>;
+      var oldValue = _cache.AddOrGetExisting(key, newValue, GetCIP(key)) as Lazy<T>;
       try
       {
         return (oldValue ?? newValue).Value;
@@ -38,6 +38,21 @@ namespace LibraryEventData.Models
         _cache.Remove(key);
         Constants.Log(ex, "");
         throw;
+      }
+    }
+    public static CacheItemPolicy GetCIP(string key)
+    {
+      string[] s = key.Split(new[] { "," }, StringSplitOptions.None);
+
+      switch (s[0].ToLower())
+      {
+        case "locations":
+        case "event_types":
+        case "target_audience":
+        case "time_list":
+          return new CacheItemPolicy() { AbsoluteExpiration = DateTime.Today.AddDays(1) };
+        default:
+          return new CacheItemPolicy() { AbsoluteExpiration = DateTime.Now.AddHours(4) };
       }
     }
 
@@ -53,10 +68,13 @@ namespace LibraryEventData.Models
           return TargetData.GetLocationsRaw();
         case "target_audience":
           return TargetData.GetTargetAudienceRaw();
-
+        case "time_list":
+          return TargetData.GetCachedTimeList();
         default:
           return null;
       }
     }
+
   }
+
 }

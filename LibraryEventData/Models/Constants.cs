@@ -39,7 +39,7 @@ namespace LibraryEventData.Models
       {
         using (IDbConnection db =
           new SqlConnection(
-            Get_ConnStr("EventData" + (UseProduction() ? "Prod" : "QA"))))
+            Get_ConnStr()))
         {
           return (List<T>)db.Query<T>(query);
         }
@@ -50,14 +50,30 @@ namespace LibraryEventData.Models
         return null;
       }
     }
-
+    //public static List<T> Get_Data<T>(string query, map map, string splitOn)
+    //{
+    //  try
+    //  {
+    //    using (IDbConnection db =
+    //      new SqlConnection(
+    //        Get_ConnStr("EventData" + (UseProduction() ? "Prod" : "QA"))))
+    //    {
+    //      return (List<T>)db.Query<T>(query);
+    //    }
+    //  }
+    //  catch (Exception ex)
+    //  {
+    //    Log(ex, query);
+    //    return null;
+    //  }
+    //}
     public static List<T> Get_Data<T>(string query, List<int> ids)
     {
       try
       {
         using (IDbConnection db =
           new SqlConnection(
-            Get_ConnStr("EventData" + (UseProduction() ? "Prod" : "QA"))))
+            Get_ConnStr()))
         {
           return (List<T>)db.Query<T>(query, new { ids });
         }
@@ -75,7 +91,7 @@ namespace LibraryEventData.Models
       {
         using (IDbConnection db =
           new SqlConnection(
-            Get_ConnStr("EventData" + (UseProduction() ? "Prod" : "QA"))))
+            Get_ConnStr()))
         {
           return (List<T>)db.Query<T>(query, dbA);
         }
@@ -93,7 +109,7 @@ namespace LibraryEventData.Models
       {
         using (IDbConnection db =
           new SqlConnection(
-            Get_ConnStr("EventData" + (UseProduction() ? "Prod" : "QA"))))
+            Get_ConnStr()))
         {
           return db.Execute(query, dbA);
         }
@@ -109,7 +125,7 @@ namespace LibraryEventData.Models
     {
       try
       {
-        using (IDbConnection db = new SqlConnection(Get_ConnStr("EventData" + (UseProduction() ? "Prod" : "QA"))))
+        using (IDbConnection db = new SqlConnection(Get_ConnStr()))
         {
           db.Execute(insertQuery, item);
           return true;
@@ -122,8 +138,9 @@ namespace LibraryEventData.Models
       }
     }
 
-    public static string Get_ConnStr(string cs)
+    public static string Get_ConnStr()
     {
+      var cs = "EventData" + (UseProduction() ? "Prod" : "QA");
       return ConfigurationManager.ConnectionStrings[cs].ConnectionString;
     }
 
@@ -151,7 +168,7 @@ namespace LibraryEventData.Models
             @errorStacktrace, @errorSource, @query);";
       try
       {
-        using (IDbConnection db = new SqlConnection(Get_ConnStr(cs)))
+        using (IDbConnection db = new SqlConnection(Get_ConnStr()))
         {
           db.Execute(sql, el);
         }
@@ -178,7 +195,7 @@ namespace LibraryEventData.Models
         dbArgs.Add("@Subject", subject);
         dbArgs.Add("@Body", body);
 
-        using (IDbConnection db = new SqlConnection(Get_ConnStr(cs)))
+        using (IDbConnection db = new SqlConnection(Get_ConnStr()))
         {
           db.Execute(sql, dbArgs);
         }

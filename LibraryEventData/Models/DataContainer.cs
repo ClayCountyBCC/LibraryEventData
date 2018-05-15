@@ -6,7 +6,6 @@ using System.Net.Http;
 using System.Web.Http;
 using LibraryEventData.Models;
 using System.Runtime.Caching;
-
 using System.Web;
 
 namespace LibraryEventData.Models
@@ -17,33 +16,19 @@ namespace LibraryEventData.Models
     public List<TargetData> Locations { get; set; }
     public List<TargetData> Target_Audiences { get; set; }
     public UserAccess CurrentAccess { get; set; }
-    public List<string> Times
-    {
-      get
-      {
-        List<string> times = new List<string>();
-        DateTime date = DateTime.MinValue.AddHours(10);
-        DateTime endDate = date.AddHours(12);
-        while (date <= endDate)
-        {
-          times.Add(date.ToString("hh:mm tt"));
-          date = date.AddMinutes(15);
-        }
-
-        return times;
-      }
-
-    }
+    public List<TargetData> Times { get; set; }
+    
     public DataContainer(string username)
     {
       try
       {
-        var CIP = new CacheItemPolicy() { AbsoluteExpiration = DateTime.Today.AddDays(1) };
 
-        this.Locations = (List<TargetData>)MyCache.GetItem("locations", CIP);
-        this.Event_Types = (List<TargetData>)MyCache.GetItem("event_types", CIP);
-        this.Target_Audiences = (List<TargetData>)MyCache.GetItem("target_audience", CIP);
+        this.Locations = (List<TargetData>)MyCache.GetItem("locations");
+        this.Event_Types = (List<TargetData>)MyCache.GetItem("event_types");
+        this.Target_Audiences = (List<TargetData>)MyCache.GetItem("target_audience");
         this.CurrentAccess = new UserAccess(username);//UserAccess.GetUserAccess(username);
+        this.Times = (List<TargetData>)MyCache.GetItem("time_list");
+
       }
       catch(Exception ex)
       {
@@ -51,6 +36,7 @@ namespace LibraryEventData.Models
       }
 
     }
+
 
   }
 }

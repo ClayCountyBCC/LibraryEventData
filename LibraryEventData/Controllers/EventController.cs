@@ -11,8 +11,9 @@ namespace LibraryEventData.Controllers
 {
   public class EventController : ApiController
   {
-    public IHttpActionResult GetList(Boolean InCompleteOnly = false, int EventDate = 7, int Location = -1)
+    public IHttpActionResult GetList(Boolean InCompleteOnly = true, int EventDate = 7, int Location = -1)
     {
+      
       return Ok();
     }
 
@@ -23,20 +24,19 @@ namespace LibraryEventData.Controllers
 
       if (events.Count < 1)
       {
-        return InternalServerError();
-
+        return BadRequest($"Event {id} not found");
       }
       else
       {
         return Ok(events);
       }
     }
+
     public IHttpActionResult Save(List<Event> newEvents)
     {
       if (newEvents.Count == 0)
       {
-        return InternalServerError();
-
+        return BadRequest("Could not save the event.");
       }
       else
       {
