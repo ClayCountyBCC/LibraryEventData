@@ -130,15 +130,45 @@
         </tbody>
       </table>
       <div class="modal"
+           id="showErrors">
+        <div onclick="EventData.CloseModals();"
+             class="modal-background"></div>
+        <div class="modal-card">
+          <header class="modal-card-head">
+            <p class="modal-card-title">Error Information</p>
+            <button onclick="EventData.CloseModals();"
+                    class="delete" 
+                    aria-label="close"></button>
+          </header>
+          <section class="modal-card-body">
+            <div class="field">
+              <label class="label">Error Information</label>
+              <div class="control">
+                <textarea id="errorText"
+                          rows="4"
+                          class="textarea"></textarea>
+              </div>
+            </div>
+          </section>
+          <footer class="modal-card-foot">
+            <button onclick="EventData.CloseModals();"
+                    class="button is-success">Ok</button>            
+          </footer>
+        </div>
+      </div>
+
+
+
+      <div class="modal"
            id="addAttendance">
-        <div onclick="EventData.Attendance.CloseModal();"
+        <div onclick="EventData.CloseModals();"
              class="modal-background"></div>
         <div class="modal-card">
           <header class="modal-card-head">
             <p class="modal-card-title">
               Add Event Attendance
             </p>
-            <button onclick="EventData.Attendance.CloseModal();"
+            <button onclick="EventData.CloseModals();"
                     type="button"
                     class="delete"
                     aria-label="close"></button>
@@ -251,7 +281,7 @@
               Save Changes
             </button>
             <button type="button"
-                    onclick="EventData.Attendance.CloseModal();"
+                    onclick="EventData.CloseModals();"
                     class="button">
               Cancel
             </button>

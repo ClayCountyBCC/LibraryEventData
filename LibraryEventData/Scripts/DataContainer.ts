@@ -6,7 +6,7 @@
     Locations: Array<TargetData>;
     Target_Audiences: Array<TargetData>;
     CurrentAccess: UserAccess;
-    Times: Array<string>;
+    Times: Array<TargetData>;
 
   }
 
@@ -16,7 +16,7 @@
     public Locations: Array<TargetData>;
     public Target_Audiences: Array<TargetData>;
     public CurrentAccess: UserAccess;
-    public Times: Array<string>;
+    public Times: Array<TargetData>;
 
     constructor()
     {
