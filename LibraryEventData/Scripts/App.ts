@@ -4,7 +4,7 @@
 namespace EventData
 {
 
-  export let Times: Array<string> = [];
+  export let Times: Array<TargetData> = [];
   export let Locations: Array<TargetData> = [];
   export let AddedEvents: Array<number> = []; // used for the Add Event functionality
   export let CurrentAccess: UserAccess = null;
@@ -26,9 +26,9 @@ namespace EventData
         CurrentAccess = dc.CurrentAccess;
         Times = dc.Times;
         Locations = dc.Locations;
-        console.log('populateuieelements');
         PopulateUIElements(dc.Event_Types, dc.Target_Audiences, dc.Locations, Times);
         HandleUserAccess();
+        // Event.GetList();
 
       }).catch(function (error)
       {
@@ -124,5 +124,17 @@ namespace EventData
     }
   }
 
+  export function CloseModals(): void
+  {
+    let modals = document.querySelectorAll(".modal");
+    if (modals.length > 0)
+    {
+      for (let i = 0; i < modals.length; i++)
+      {
+        let modal = modals.item(i);
+        modal.classList.remove("is-active");
+      }
+    }
+  }
 
 }

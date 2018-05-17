@@ -131,6 +131,7 @@ module XHR
 
   export function GetArray<T>(url: string, queryString: string = ""): Promise<Array<T>>
   {
+    console.log("GetArray", url, queryString);
     var x = XHR.Get(url + queryString);
     return new Promise<Array<T>>(function (resolve, reject)
     {

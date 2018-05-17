@@ -14,9 +14,10 @@ var EventData;
             // list of events shown on the main page.
             var eventDateElement = document.getElementById("filterEventDate");
             var locationElement = document.getElementById("filterLocation");
+            var completedElement = document.getElementById("filterInComplete");
             var eventDate = eventDateElement.selectedOptions[0].value;
             var location = locationElement.selectedOptions[0].value;
-            var CompletedOnly = document.getElementById("filterIncomplete").checked;
+            var CompletedOnly = completedElement.checked;
             var qs = "";
             if (CompletedOnly) {
                 qs = qs + "&InCompleteOnly=true";
@@ -27,12 +28,17 @@ var EventData;
             if (location !== "-1") {
                 qs = qs + "&Location=" + location;
             }
+            if (qs.length > 0) {
+                qs = "?" + qs.slice(1);
+            }
             XHR.GetArray("./API/Event/GetList", qs).then(function (events) {
+                console.log('Events returned by GetList', events);
                 Event.BuildEventList(events);
             }).catch(function (error) {
                 // if this happens, we should just notify the user
                 // and stop.  We won't clear the existing Event list, if there are any.
                 // Create Message Modal
+                console.log('bad stuff happened in GetList');
             });
         };
         Event.BuildEventList = function (events) {
@@ -222,7 +228,7 @@ var EventData;
             };
             for (var _i = 0, Times_1 = EventData.Times; _i < Times_1.length; _i++) {
                 var t = Times_1[_i];
-                eventTime.add(Utilities.Create_Option(t, t));
+                eventTime.add(Utilities.Create_Option(t.Value, t.Label));
             }
             selectContainer.appendChild(eventTime);
             control.appendChild(selectContainer);
@@ -243,7 +249,7 @@ var EventData;
             eventTime.id = "addEventTo" + id.toString();
             for (var _i = 0, Times_2 = EventData.Times; _i < Times_2.length; _i++) {
                 var t = Times_2[_i];
-                eventTime.add(Utilities.Create_Option(t, t));
+                eventTime.add(Utilities.Create_Option(t.Value, t.Label));
             }
             selectContainer.appendChild(eventTime);
             control.appendChild(selectContainer);
@@ -256,7 +262,7 @@ var EventData;
             Utilities.Clear_Element(eventTime);
             eventTime.add(Utilities.Create_Option("", "Event To", true));
             for (var i = SelectedTimeFromIndex; i < EventData.Times.length; i++) {
-                eventTime.add(Utilities.Create_Option(EventData.Times[i], EventData.Times[i]));
+                eventTime.add(Utilities.Create_Option(EventData.Times[i].Value, EventData.Times[i].Label));
             }
         };
         Event.CreateRemoveEventButton = function (id) {

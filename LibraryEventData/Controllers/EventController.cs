@@ -11,7 +11,9 @@ namespace LibraryEventData.Controllers
 {
   public class EventController : ApiController
   {
-    public IHttpActionResult GetList(Boolean InCompleteOnly = true, int EventDate = 7, int Location = -1)
+    [HttpGet]
+    [Route("Event/GetList")]
+    public IHttpActionResult GetList(Boolean InCompleteOnly = true, int EventDate = -1, int Location = -1)
     {
       Event.GetList(InCompleteOnly, EventDate, Location);
       return Ok();

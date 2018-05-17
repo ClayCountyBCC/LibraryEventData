@@ -33,10 +33,10 @@
       // list of events shown on the main page.
       let eventDateElement = <HTMLSelectElement>document.getElementById("filterEventDate");
       let locationElement = <HTMLSelectElement>document.getElementById("filterLocation");
+      let completedElement = <HTMLInputElement>document.getElementById("filterInComplete");
       let eventDate = eventDateElement.selectedOptions[0].value;
       let location = locationElement.selectedOptions[0].value;
-
-      let CompletedOnly = (<HTMLInputElement>document.getElementById("filterIncomplete")).checked;
+      let CompletedOnly = completedElement.checked;
       let qs = "";
       if (CompletedOnly)
       {
@@ -50,8 +50,13 @@
       {
         qs = qs + "&Location=" + location;
       }
+      if (qs.length > 0)
+      {
+        qs = "?" + qs.slice(1);
+      }
       XHR.GetArray<Event>("./API/Event/GetList", qs).then(function (events)
       {
+        console.log('Events returned by GetList', events);
         Event.BuildEventList(events);
 
       }).catch(function (error)
@@ -59,10 +64,11 @@
         // if this happens, we should just notify the user
         // and stop.  We won't clear the existing Event list, if there are any.
         // Create Message Modal
+        console.log('bad stuff happened in GetList');
       });
     }
 
-    static BuildEventList(events: Array<Event>): void
+    public static BuildEventList(events: Array<Event>): void
     {
       // this function is going to clear the current event list table
       // and then rebuild it with the contents of the events array argument.
@@ -288,7 +294,7 @@
       }
       for (let t of Times)
       {
-        eventTime.add(Utilities.Create_Option(t, t));
+        eventTime.add(Utilities.Create_Option(t.Value, t.Label));
       }
       selectContainer.appendChild(eventTime);
       control.appendChild(selectContainer);
@@ -311,7 +317,7 @@
       eventTime.id = "addEventTo" + id.toString();
       for (let t of Times)
       {
-        eventTime.add(Utilities.Create_Option(t, t));
+        eventTime.add(Utilities.Create_Option(t.Value, t.Label));
       }
       selectContainer.appendChild(eventTime);
       control.appendChild(selectContainer);
@@ -327,7 +333,7 @@
       eventTime.add(Utilities.Create_Option("", "Event To", true));
       for (let i = SelectedTimeFromIndex; i < Times.length; i++)
       {
-        eventTime.add(Utilities.Create_Option(Times[i], Times[i]));
+        eventTime.add(Utilities.Create_Option(Times[i].Value, Times[i].Label));
       }
     }
 

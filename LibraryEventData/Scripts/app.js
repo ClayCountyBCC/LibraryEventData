@@ -17,9 +17,9 @@ var EventData;
             EventData.CurrentAccess = dc.CurrentAccess;
             EventData.Times = dc.Times;
             EventData.Locations = dc.Locations;
-            console.log('populateuieelements');
             PopulateUIElements(dc.Event_Types, dc.Target_Audiences, dc.Locations, EventData.Times);
             HandleUserAccess();
+            // Event.GetList();
         }).catch(function (error) {
             // Notify of error.  If this happens, the app is basically unusable.
         });
@@ -91,5 +91,15 @@ var EventData;
         }
     }
     EventData.View = View;
+    function CloseModals() {
+        var modals = document.querySelectorAll(".modal");
+        if (modals.length > 0) {
+            for (var i = 0; i < modals.length; i++) {
+                var modal = modals.item(i);
+                modal.classList.remove("is-active");
+            }
+        }
+    }
+    EventData.CloseModals = CloseModals;
 })(EventData || (EventData = {}));
 //# sourceMappingURL=app.js.map

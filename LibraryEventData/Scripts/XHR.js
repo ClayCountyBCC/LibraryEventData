@@ -99,6 +99,7 @@ var XHR;
     XHR.Delete = Delete;
     function GetArray(url, queryString) {
         if (queryString === void 0) { queryString = ""; }
+        console.log("GetArray", url, queryString);
         var x = XHR.Get(url + queryString);
         return new Promise(function (resolve, reject) {
             x.then(function (response) {

@@ -31,19 +31,6 @@
       // and then send that object to the Save Attendance end point.
     }
 
-    public static CloseModal(): void
-    {
-      let modals = document.querySelectorAll(".modal");
-      if (modals.length > 0)
-      {
-        for (let i = 0; i < modals.length; i++)
-        {
-          let modal = modals.item(i);
-          modal.classList.remove("is-active");
-        }
-      }
-      
-    }
 
   }
 
