@@ -18,17 +18,17 @@ namespace LibraryEventData.Controllers
     }
 
     
-    public IHttpActionResult GetEvent(int id = -1)
+    public IHttpActionResult GetEvent(long id = -1)
     {
-      var events = Event.GetEvent(id);
+      var thisEvent = Event.GetEvent(id);
 
-      if (events.Count < 1)
+      if (thisEvent == null || thisEvent.id != id)
       {
         return BadRequest($"Event {id} not found");
       }
       else
       {
-        return Ok(events);
+        return Ok(thisEvent);
       }
     }
 
@@ -36,7 +36,7 @@ namespace LibraryEventData.Controllers
     {
       if (newEvents.Count == 0)
       {
-        return BadRequest("Could not save the event.");
+        return BadRequest("Could not save the events.");
       }
       else
       {
