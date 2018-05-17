@@ -8,11 +8,11 @@ namespace LibraryEventData.Models
 {
   public class Attendance
   {
-    public long event_id{ get; set; } // in case we want to pull more than one event at a time.
-    public string event_type { get; set; }
-    public int youth_count { get; set; }
-    public int adult_count { get; set; }
-    public string notes { get; set; }
+    public long event_id { get; set; } = -1; // in case we want to pull more than one event at a time.
+    public string event_type { get; set; } = "";
+    public int youth_count { get; set; } = 0;
+    public int adult_count { get; set; } = 0;
+    public string notes { get; set; } = "";
 
     // When getting Event from client, it will always have attendance data
     // If attendance data is 'empty', it will need to be null
@@ -47,12 +47,24 @@ namespace LibraryEventData.Models
       }
     }
 
-    public static Attendance SaveAttendanceData(long event_id, Attendance data)
+    public static List<string> SaveAttendanceData(long event_id, Attendance data)
     {
-
+      var error = new List<string>();
+      var sql = @"
       
-      return new List<Attendance>();
+      
+      ";
+      try
+      {
+        Constants.Get_Data<Attendance>(sql);
+        return error;
+      }
+      catch (Exception ex)
+      {
+        Constants.Log(ex, sql);
+        error.Add("There was an issue saving the Attendance data, please try again. If this issue persists, please contact the help desk.");
+        return error;
+      }
     }
-
   }
 }

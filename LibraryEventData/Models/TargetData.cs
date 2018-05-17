@@ -33,7 +33,9 @@ namespace LibraryEventData.Models
       FROM [dbo].[Location]
       ORDER BY [Location]";
 
-      return Constants.Get_Data<TargetData>(sql);
+      var locations = Constants.Get_Data<TargetData>(sql);
+
+      return locations;
 
     }
 
@@ -56,7 +58,7 @@ namespace LibraryEventData.Models
 
       SELECT id Value, target_audience Label
       FROM Target_Audience
-       ORDER BY [target_audience]";
+       ORDER BY [id]";
 
       return Constants.Get_Data<TargetData>(sql);
 

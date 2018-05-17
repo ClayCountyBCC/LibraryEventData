@@ -26,7 +26,7 @@ namespace LibraryEventData.Models
         this.Locations = (List<TargetData>)MyCache.GetItem("locations");
         this.Event_Types = (List<TargetData>)MyCache.GetItem("event_types");
         this.Target_Audiences = (List<TargetData>)MyCache.GetItem("target_audience");
-        this.CurrentAccess = new UserAccess(username);//UserAccess.GetUserAccess(username);
+        this.CurrentAccess = new UserAccess(username);
         this.Times = (List<TargetData>)MyCache.GetItem("time_list");
 
       }

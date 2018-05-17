@@ -22,6 +22,7 @@ namespace LibraryEventData.Models
           return false;
 
         case "MISSL01":
+        //case "MISHL05":
         case "CLAYBCCIIS01":
         case "CLAYBCCDMZIIS01":
           // will need to add the DMZ machine name(s) here.
@@ -50,23 +51,7 @@ namespace LibraryEventData.Models
         return null;
       }
     }
-    //public static List<T> Get_Data<T>(string query, map map, string splitOn)
-    //{
-    //  try
-    //  {
-    //    using (IDbConnection db =
-    //      new SqlConnection(
-    //        Get_ConnStr("EventData" + (UseProduction() ? "Prod" : "QA"))))
-    //    {
-    //      return (List<T>)db.Query<T>(query);
-    //    }
-    //  }
-    //  catch (Exception ex)
-    //  {
-    //    Log(ex, query);
-    //    return null;
-    //  }
-    //}
+ 
     public static List<T> Get_Data<T>(string query, List<int> ids)
     {
       try

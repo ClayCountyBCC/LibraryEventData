@@ -13,14 +13,14 @@ namespace LibraryEventData.Controllers
   {
     public IHttpActionResult GetList(Boolean InCompleteOnly = true, int EventDate = 7, int Location = -1)
     {
-      
+      Event.GetList(InCompleteOnly, EventDate, Location);
       return Ok();
     }
 
-    public IHttpActionResult Get(int id)
+    
+    public IHttpActionResult GetEvent(int id = -1)
     {
-      var ua = UserAccess.GetUserAccess(User.Identity.Name);
-      var events = Event.GetEventsRaw();
+      var events = Event.GetEvent(id);
 
       if (events.Count < 1)
       {

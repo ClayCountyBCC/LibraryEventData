@@ -49,8 +49,9 @@ namespace LibraryEventData.Models
         case "locations":
         case "event_types":
         case "target_audience":
-        case "time_list":
           return new CacheItemPolicy() { AbsoluteExpiration = DateTime.Today.AddDays(1) };
+        case "time_list":
+          return new CacheItemPolicy() { AbsoluteExpiration = DateTime.Today.AddDays(7) };
         default:
           return new CacheItemPolicy() { AbsoluteExpiration = DateTime.Now.AddHours(4) };
       }
