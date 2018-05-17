@@ -18,7 +18,7 @@ namespace LibraryEventData.Controllers
     }
 
     
-    public IHttpActionResult GetEvent(int id = -1)
+    public IHttpActionResult GetEvent(long id = -1)
     {
       var events = Event.GetEvent(id);
 

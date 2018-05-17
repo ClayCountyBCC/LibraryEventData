@@ -16,16 +16,16 @@ namespace LibraryEventData.Models
     private DateTime event_date_raw { get; set; }
     private DateTime event_time_from_raw { get; set; }
     private DateTime event_time_to_raw { get; set; }
-    public int location_id{ get; set; }
+    public int location_id { get; set; }
     //public List<string> age_groups { get; set; }
     public Attendance attendance { get; set; }
     public string event_date { get; set; }
-    public string event_time_from{ get; set; }
+    public string event_time_from { get; set; }
     public string event_time_to { get; set; }
 
     public Event()
     {
-       
+
     }
 
     public static List<Event> GetEventsRaw(int EventDate = 7, int Location = -1)
@@ -71,7 +71,8 @@ namespace LibraryEventData.Models
               Constants.Get_ConnStr());
         var events = (List<Event>)query.Query<Event, Attendance, Event>(
           sql,
-          map: (e, a) => {
+          map: (e, a) =>
+          {
             e.attendance = a;
             return e;
           },
@@ -86,7 +87,7 @@ namespace LibraryEventData.Models
         return new List<Event>();
       }
     }
-    
+
     public static List<Event> GetList(Boolean IncompleteOnly = true, int EventDate = 7, int Location = -1)
     {
       var events = GetEventsRaw(EventDate, Location);
@@ -94,18 +95,16 @@ namespace LibraryEventData.Models
       {
         events.RemoveAll(e => e.attendance.event_id != -1);
       }
-      return events;  
+      return events;
     }
 
-    public static List<Event> GetEvent(List<long> event_ids)
+    public static List<Event> GetEvent(long event_id)
     {
-      if(event_ids.Count() > 0)
-      {
-        // TODO: GET This event
-        var dbArgs = new Dapper.DynamicParameters();
-        dbArgs.Add("@event_ids", event_ids);
+      // TODO: GET This event
+      var dbArgs = new Dapper.DynamicParameters();
+      dbArgs.Add("@event_id", event_id);
 
-        string sql = @"
+      string sql = @"
       
         USE ClayEventData
       
@@ -134,40 +133,36 @@ namespace LibraryEventData.Models
           ON A.event_id = E.id
         WHERE event_id in @event_ids";
 
-        try
-        {
-          var query =
-              new SqlConnection(
-                Constants.Get_ConnStr());
-          var events = (List<Event>)query.Query<Event, Attendance, Event>(
-            sql,
-            map: (e, a) => {
-              e.attendance = a;
-              return e;
-            },
-            splitOn: "event_id"
-          );
-
-          return events;
-        }
-        catch (Exception ex)
-        {
-          Constants.Log(ex, sql);
-          return new List<Event>();
-        }
-
-      }
-      else
+      try
       {
+        var query =
+            new SqlConnection(
+              Constants.Get_ConnStr());
+        var events = (List<Event>)query.Query<Event, Attendance, Event>(
+          sql,
+          map: (e, a) =>
+          {
+            e.attendance = a;
+            return e;
+          },
+          splitOn: "event_id"
+        );
+
+        return events;
+      }
+      catch (Exception ex)
+      {
+        Constants.Log(ex, sql);
         return new List<Event>();
       }
+
     }
 
     public static bool SaveEvents(List<Event> events, UserAccess ua)
     {
       var attendance = events[0].attendance;
 
-      if(attendance.event_id != -1)
+      if (attendance.event_id != -1)
       {
         // TODO: save attendance
 
