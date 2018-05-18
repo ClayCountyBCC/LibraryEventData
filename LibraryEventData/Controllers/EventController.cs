@@ -51,6 +51,10 @@ namespace LibraryEventData.Controllers
           if (errors == null || errors.Count() == 0) 
           {
             var ne = Event.SaveEvents(newEvents, User.Identity.Name);
+            if(ne == 0)
+            {
+              errors.Add("Error Saving this list of events. If the issue persists, please reach out to the helpdesk.");
+            }
           }
           else
           {

@@ -287,6 +287,8 @@ namespace LibraryEventData.Models
                      select t.Label;
       var locationList = (from t in TargetData.GetLocationsRaw()
                           select t).ToList();
+
+
       var count = 1;
       foreach (var e in events)
       {
@@ -296,10 +298,7 @@ namespace LibraryEventData.Models
         {
           errors.Add($"Invalid name for event #{count}.");
         }
-        if (TargetData.GetEventTypesRaw().FirstOrDefault(t => t.Value == e.attendance.event_type.ToString()) == null)
-        {
-          errors.Add($@"Invalid 'Event Type' for event #{count}.");
-        }
+
         if (e.event_date_raw.Date < earlyDate || e.event_date_raw.Date > farDate)
         {
           errors.Add($@"For event #{count},  Please select a date within 1 year.");
@@ -333,7 +332,6 @@ namespace LibraryEventData.Models
 
       return null;
     }
-
 
   }
 }
