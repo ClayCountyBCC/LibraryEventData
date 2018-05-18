@@ -63,7 +63,7 @@ namespace EventData
   function PopulateUIElements(EventTypes: Array<TargetData>,
     TargetAudiences: Array<TargetData>,
     Locations: Array<TargetData>,
-    Times: Array<string>)
+    Times: Array<TargetData>)
   {
     // this is a filter
     let locFilter = <HTMLSelectElement>document.getElementById("filterLocation");

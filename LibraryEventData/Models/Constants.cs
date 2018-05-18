@@ -22,7 +22,7 @@ namespace LibraryEventData.Models
           return false;
 
         case "MISSL01":
-        //case "MISHL05":
+        case "MISHL05":
         case "CLAYBCCIIS01":
         case "CLAYBCCDMZIIS01":
           // will need to add the DMZ machine name(s) here.

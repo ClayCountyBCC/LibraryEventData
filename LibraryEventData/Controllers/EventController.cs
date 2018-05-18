@@ -15,8 +15,8 @@ namespace LibraryEventData.Controllers
     [Route("Event/GetList")]
     public IHttpActionResult GetList(Boolean InCompleteOnly = true, int EventDate = -1, int Location = -1)
     {
-      Event.GetList(InCompleteOnly, EventDate, Location);
-      return Ok();
+      var eventList = Event.GetList(InCompleteOnly, EventDate, Location);
+      return Ok(eventList);
     }
 
     
@@ -24,7 +24,7 @@ namespace LibraryEventData.Controllers
     {
       var thisEvent = Event.GetEvent(id);
 
-      if (thisEvent == null || thisEvent.id != id)
+      if (thisEvent == null)
       {
         return BadRequest($"Event {id} not found");
       }
@@ -36,17 +36,42 @@ namespace LibraryEventData.Controllers
 
     public IHttpActionResult Save(List<Event> newEvents)
     {
+      var error = new List<string>();
       if (newEvents.Count == 0)
       {
-        return BadRequest("Could not save the events.");
+        error.Add("There were no events to save, please try the request again");
+        return Ok(error);
       }
       else
       {
-        var ua = UserAccess.GetUserAccess(User.Identity.Name);
-        var ne = Event.SaveEvents(newEvents, ua);
-        return Ok(ne);
+
+        if(UserAccess.GetUserAccess(User.Identity.Name).current_access == UserAccess.access_type.admin_access)
+        {
+          var errors = Event.Validate(newEvents);
+          if (errors == null || errors.Count() == 0) 
+          {
+            var ne = Event.SaveEvents(newEvents);
+          }
+          else
+          {
+            return Ok(errors);
+          }
+
+        }
+        else
+        {
+          error.Add("Events have not been saved, user has incorrect level of access.");
+        }
       }
+      return Ok(error);
+    }
+
+    public IHttpActionResult UpdateEvent(Event existingEvent)
+    {
+
+      
+      return Ok(new Event());
     }
 
   }
-}
+} 

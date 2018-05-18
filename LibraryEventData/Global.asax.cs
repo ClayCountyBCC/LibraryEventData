@@ -5,6 +5,8 @@ using System.Web;
 using System.Web.Security;
 using System.Web.SessionState;
 using System.Web.Http;
+using LibraryEventData.Models;
+using LibraryEventData.Controllers;
 
 namespace LibraryEventData
 {

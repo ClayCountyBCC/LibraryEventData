@@ -19,28 +19,36 @@ namespace LibraryEventData.Models
     public int location_id{ get; set; }
     //public List<string> age_groups { get; set; }
     public Attendance attendance { get; set; }
-    public string event_date { get; set; }
+    public string event_date{ get; set; }
     public string event_time_from{ get; set; }
     public string event_time_to { get; set; }
 
     public Event()
     {
-       
+
     }
 
     public static List<Event> GetEventsRaw(bool IncompleteOnly, int EventDate, int Location)
     {
-      var dbArgs = new Dapper.DynamicParameters();
-      dbArgs.Add("@EventDate", EventDate);
+     // doing this because I could not get @EventDate and @FromDate parameters to declare in sql
+     // using dapper param.Add(). I was receiving undeclared parameter on both. I am using this to
+     // validate good data on EventDate parameter and setting a default if false in order to prevent
+     // unwanted data. I will need to fix this so it is not hard coded values but this works until I can
+     // properly use the dynamic parameters with the query.Query<TFirst, TSecond, TTarget>() funt
+      var EventDateGoodValues = new List<int>{ -1, 7, 30, 60 };
+      if(!EventDateGoodValues.Contains(EventDate))
+      {
+        EventDate = 7;
+      }
 
-      string sql = @"
+      string sql = $@"
       
       USE ClayEventData
-      DECLARE @FromDate DATE = CAST(DATEADD(dd,-@EventDate,GETDATE()) AS DATE)
+      DECLARE @FromDate DATE = CAST(DATEADD(dd,{EventDate} * -1,GETDATE()) AS DATE);
       SELECT 
         E.id,
-        E.event_date,
-        E.event_name event_name_raw,
+        E.event_date event_date_raw,
+        E.event_name,
         E.event_time_from event_time_from_raw,
         E.event_time_to event_time_to_raw,
         E.location_id,
@@ -60,16 +68,20 @@ namespace LibraryEventData.Models
       FROM [Event] E
       LEFT OUTER JOIN [Attendance] A
         ON A.event_id = E.id
-      WHERE CAST(event_date AS DATE) >= CAST(@FromDate AS DATE)";
+      WHERE (CAST(@FromDate AS DATE) = CAST(DATEADD(dd,1,GETDATE()) AS DATE)
+             OR CAST(event_date AS DATE) >= CAST(@FromDate AS DATE))";
+      
+
+      var param = new Dapper.DynamicParameters();
 
       if (Location > 0)
       {
-        dbArgs.Add("@Location", Location);
+        param.Add("@Location", Location);
         sql += " AND Location_id = @Location";
       }
       if(IncompleteOnly)
       {
-        dbArgs.Add("@IncompleteOnly", IncompleteOnly);
+        param.Add("@IncompleteOnly", IncompleteOnly);
         sql += " AND A.event_id IS NULL";
       }
 
@@ -79,13 +91,19 @@ namespace LibraryEventData.Models
         var query =
             new SqlConnection(
               Constants.Get_ConnStr());
+        
         var events = (List<Event>)query.Query<Event, Attendance, Event>(
           sql,
-          map: (e, a) => {
+          map: (e, a ) => {
             e.attendance = a;
+            if (a != null) { e.attendance.GetTargetAudiences(); };
+            e.event_date = e.event_date_raw.ToShortDateString();
+            e.event_time_from = e.event_time_from_raw.ToShortTimeString();
+            e.event_time_to = e.event_time_to_raw.ToShortTimeString();
             return e;
           },
-          splitOn: "event_id"
+         
+          splitOn: "id,event_id"
         );
 
         return events;
@@ -169,22 +187,79 @@ namespace LibraryEventData.Models
       }
     }
 
-    public static bool SaveEvents(List<Event> events, UserAccess ua)
+    public static List<string> SaveEvents(List<Event> events )
     {
-      var attendance = events[0].attendance;
-
-      if(attendance.event_id != -1)
+      var errors = new List<string>();
+      if (events == null || events.Count() == 0)
       {
-        // TODO: save attendance
-
+        errors.Add("There are no events to save. If you have attempted to save a valid event, please try again");
+      }
+      else
+      {
+        
+         
       }
 
-      return true;
+
+      return errors;
     }
 
-    public static bool Validate (List<Event> events, UserAccess ua)
+    public static List<string> Validate(List<Event> events)
     {
-      return false;
+      var errors = new List<string>();
+      var earlyDate = new DateTime().AddYears(-1).Date;
+      var farDate = new DateTime().AddYears(1).Date;
+      var timeList = from t in TargetData.GetCachedTimeList()
+                     select t.Label;
+      var locationList = (from t in TargetData.GetLocationsRaw()
+                         select t).ToList();
+      var count = 1;
+      foreach (var e in events)
+      {
+        var locationName = (from l in locationList where l.Value == e.location_id.ToString() select l.Label).First();
+
+        if(e.event_name.Length == 0)
+        {
+          errors.Add($"Invalid name for event #{count}.");
+        }
+        if (TargetData.GetEventTypesRaw().FirstOrDefault(t => t.Value == e.attendance.event_type.ToString()) == null)
+        {
+          errors.Add($@"Invalid 'Event Type' for event #{count}.");
+        }
+        if (e.event_date_raw.Date < earlyDate || e.event_date_raw.Date > farDate)
+        {
+          errors.Add($@"For event #{count},  Please select a date within 1 year.");
+        }
+
+        if (locationList.FirstOrDefault(l => l.Value == e.location_id.ToString()) == null)
+        {
+          errors.Add($"The location for event #{count} at {locationName} could not be found.");
+        }
+
+        if(!timeList.Contains(e.event_time_from) || e.event_time_from_raw.TimeOfDay > e.event_time_to_raw.TimeOfDay)
+        {
+          errors.Add($@"On event {e.event_name} at {locationName} on {e.event_date}, {e.event_time_from}
+                        is not an acceptable time.");
+        }
+        
+        if(!timeList.Contains(e.event_time_to))
+        {
+          errors.Add($@"On event {e.event_name} at {locationName} on {e.event_date}, {e.event_time_to}
+                        is not an acceptable time.");
+        }
+
+        count++;
+        
+      }
+
+      if (errors.Count() > 0)
+      {
+        return errors;
+      }
+
+      return null;
     }
+
+
   }
 }
