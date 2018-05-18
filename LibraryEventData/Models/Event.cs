@@ -16,11 +16,11 @@ namespace LibraryEventData.Models
     private DateTime event_date_raw { get; set; }
     private DateTime event_time_from_raw { get; set; }
     private DateTime event_time_to_raw { get; set; }
-    public int location_id{ get; set; }
+    public int location_id { get; set; }
     //public List<string> age_groups { get; set; }
     public Attendance attendance { get; set; }
-    public string event_date{ get; set; }
-    public string event_time_from{ get; set; }
+    public string event_date { get; set; }
+    public string event_time_from { get; set; }
     public string event_time_to { get; set; }
 
     public Event()
@@ -30,13 +30,13 @@ namespace LibraryEventData.Models
 
     public static List<Event> GetEventsRaw(bool IncompleteOnly, int EventDate, int Location)
     {
-     // doing this because I could not get @EventDate and @FromDate parameters to declare in sql
-     // using dapper param.Add(). I was receiving undeclared parameter on both. I am using this to
-     // validate good data on EventDate parameter and setting a default if false in order to prevent
-     // unwanted data. I will need to fix this so it is not hard coded values but this works until I can
-     // properly use the dynamic parameters with the query.Query<TFirst, TSecond, TTarget>() funt
-      var EventDateGoodValues = new List<int>{ -1, 7, 30, 60 };
-      if(!EventDateGoodValues.Contains(EventDate))
+      // doing this because I could not get @EventDate and @FromDate parameters to declare in sql
+      // using dapper param.Add(). I was receiving undeclared parameter on both. I am using this to
+      // validate good data on EventDate parameter and setting a default if false in order to prevent
+      // unwanted data. I will need to fix this so it is not hard coded values but this works until I can
+      // properly use the dynamic parameters with the query.Query<TFirst, TSecond, TTarget>() funt
+      var EventDateGoodValues = new List<int> { -1, 7, 30, 60 };
+      if (!EventDateGoodValues.Contains(EventDate))
       {
         EventDate = 7;
       }
@@ -70,7 +70,7 @@ namespace LibraryEventData.Models
         ON A.event_id = E.id
       WHERE (CAST(@FromDate AS DATE) = CAST(DATEADD(dd,1,GETDATE()) AS DATE)
              OR CAST(event_date AS DATE) >= CAST(@FromDate AS DATE))";
-      
+
 
       var param = new Dapper.DynamicParameters();
 
@@ -79,7 +79,7 @@ namespace LibraryEventData.Models
         param.Add("@Location", Location);
         sql += " AND Location_id = @Location";
       }
-      if(IncompleteOnly)
+      if (IncompleteOnly)
       {
         param.Add("@IncompleteOnly", IncompleteOnly);
         sql += " AND A.event_id IS NULL";
@@ -91,10 +91,11 @@ namespace LibraryEventData.Models
         var query =
             new SqlConnection(
               Constants.Get_ConnStr());
-        
+
         var events = (List<Event>)query.Query<Event, Attendance, Event>(
           sql,
-          map: (e, a ) => {
+          map: (e, a) =>
+          {
             e.attendance = a;
             if (a != null) { e.attendance.GetTargetAudiences(); };
             e.event_date = e.event_date_raw.ToShortDateString();
@@ -102,7 +103,7 @@ namespace LibraryEventData.Models
             e.event_time_to = e.event_time_to_raw.ToShortTimeString();
             return e;
           },
-         
+
           splitOn: "id,event_id"
         );
 
@@ -114,16 +115,16 @@ namespace LibraryEventData.Models
         return new List<Event>();
       }
     }
-    
+
     public static List<Event> GetList(Boolean IncompleteOnly = true, int EventDate = 7, int Location = -1)
     {
       var events = GetEventsRaw(IncompleteOnly, EventDate, Location);
-      return events;  
+      return events;
     }
 
     public static Event GetEvent(long event_id)
     {
-      if(event_id != -1)
+      if (event_id != -1)
       {
         // TODO: GET This event
         var dbArgs = new Dapper.DynamicParameters();
@@ -165,7 +166,8 @@ namespace LibraryEventData.Models
                 Constants.Get_ConnStr());
           var thisEvent = (Event)query.Query<Event, Attendance, Event>(
             sql,
-            map: (e, a) => {
+            map: (e, a) =>
+            {
               e.attendance = a;
               return e;
             },
@@ -183,42 +185,87 @@ namespace LibraryEventData.Models
       }
       else
       {
-        return new Event ();
+        return new Event();
       }
     }
 
-    public static List<string> SaveEvents(List<Event> events )
+    public static int SaveEvents(List<Event> events, string username)
     {
+      // this is only called if all events contain valid data
       var errors = new List<string>();
-      if (events == null || events.Count() == 0)
+      var dbArgs = new DynamicParameters();
+      dbArgs.Add("@SaveEvents", "Transaction");
+
+      var sql = $@"
+      USE ClayEventData;
+      BEGIN TRY
+        BEGIN TRAN @SaveEvents
+         INSERT INTO Event (
+          event_date,
+          event_name,
+          event_time_from,
+          event_time_to,
+          location_id,
+          added_by, 
+          updated_by, 
+          updated_on)
+        VALUES ";
+
+      foreach (var e in events)
       {
-        errors.Add("There are no events to save. If you have attempted to save a valid event, please try again");
-      }
-      else
-      {
-        
-         
+        sql += $@" (CAST(@event_date AS DATETIME)
+                  ,{e.event_name}
+                  ,CAST({e.event_date} + ' ' + {e.event_time_from} AS DATETIME)
+                  ,CAST({e.event_date} + ' ' + {e.event_time_to} AS DATETIME)
+                  ,{e.location_id}
+                  ,{username}
+                  ,{username}
+                  ,GETDATE())";
+
+        if (events.IndexOf(e) != events.IndexOf(events.Last()))
+        {
+          sql += ",";
+        }
+
       }
 
+      sql += @"
+      END TRY
+      BEGIN CATCH 
+        ROLLBACK TRAN @SaveEvents
+      END CATCH";
 
-      return errors;
+      var rowsAffected = Constants.Exec_Query(sql, dbArgs);
+      return rowsAffected;
+
     }
 
+    public static Event UpdateEvent(Event existingEvent)
+    {
+      
+      return new Event();
+    }
     public static List<string> Validate(List<Event> events)
     {
       var errors = new List<string>();
+
+      if (events.Count < 1)
+      {
+        errors.Add("There are no events to save. If you have attempted to save a valid event, please try again");
+        return errors;
+      }
       var earlyDate = new DateTime().AddYears(-1).Date;
       var farDate = new DateTime().AddYears(1).Date;
       var timeList = from t in TargetData.GetCachedTimeList()
                      select t.Label;
       var locationList = (from t in TargetData.GetLocationsRaw()
-                         select t).ToList();
+                          select t).ToList();
       var count = 1;
       foreach (var e in events)
       {
         var locationName = (from l in locationList where l.Value == e.location_id.ToString() select l.Label).First();
 
-        if(e.event_name.Length == 0)
+        if (e.event_name.Length == 0)
         {
           errors.Add($"Invalid name for event #{count}.");
         }
@@ -236,20 +283,20 @@ namespace LibraryEventData.Models
           errors.Add($"The location for event #{count} at {locationName} could not be found.");
         }
 
-        if(!timeList.Contains(e.event_time_from) || e.event_time_from_raw.TimeOfDay > e.event_time_to_raw.TimeOfDay)
+        if (!timeList.Contains(e.event_time_from) || e.event_time_from_raw.TimeOfDay > e.event_time_to_raw.TimeOfDay)
         {
           errors.Add($@"On event {e.event_name} at {locationName} on {e.event_date}, {e.event_time_from}
                         is not an acceptable time.");
         }
-        
-        if(!timeList.Contains(e.event_time_to))
+
+        if (!timeList.Contains(e.event_time_to))
         {
           errors.Add($@"On event {e.event_name} at {locationName} on {e.event_date}, {e.event_time_to}
                         is not an acceptable time.");
         }
 
         count++;
-        
+
       }
 
       if (errors.Count() > 0)

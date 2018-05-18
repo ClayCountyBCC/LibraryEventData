@@ -22,7 +22,6 @@ namespace LibraryEventData.Models
 
     }
 
-
     public static Attendance GetEventAttendenceData(long event_id)
     {
       var dbArgs = new Dapper.DynamicParameters();

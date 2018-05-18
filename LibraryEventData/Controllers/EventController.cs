@@ -50,7 +50,7 @@ namespace LibraryEventData.Controllers
           var errors = Event.Validate(newEvents);
           if (errors == null || errors.Count() == 0) 
           {
-            var ne = Event.SaveEvents(newEvents);
+            var ne = Event.SaveEvents(newEvents, User.Identity.Name);
           }
           else
           {
@@ -68,9 +68,26 @@ namespace LibraryEventData.Controllers
 
     public IHttpActionResult UpdateEvent(Event existingEvent)
     {
+      var errors = new List<string>();
 
-      
-      return Ok(new Event());
+
+      if (UserAccess.GetUserAccess(User.Identity.Name).current_access == UserAccess.access_type.admin_access)
+      {
+
+        var validateList = new List<Event>();
+        validateList.Add(existingEvent);
+
+        errors = Event.Validate(validateList);
+        if (errors.Any()) return Ok(errors);
+
+        var ne = Event.UpdateEvent(existingEvent);
+
+      }
+      else
+      {
+        errors.Add("Events have not been saved, user has incorrect level of access.");
+      }
+      return Ok(errors);
     }
 
   }
