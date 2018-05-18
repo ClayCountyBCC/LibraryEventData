@@ -80,7 +80,7 @@ namespace LibraryEventData.Controllers
         errors = Event.Validate(validateList);
         if (errors.Any()) return Ok(errors);
 
-        var ne = Event.UpdateEvent(existingEvent);
+        var ne = Event.UpdateEvent(existingEvent, User.Identity.Name);
 
       }
       else

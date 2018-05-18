@@ -240,11 +240,38 @@ namespace LibraryEventData.Models
 
     }
 
-    public static Event UpdateEvent(Event existingEvent)
+    public static Event UpdateEvent(Event e, string username)
     {
+      // this function is called only if new event data is valid
+      var dbArgs = new DynamicParameters();
+      dbArgs.Add("@event_id",e.id);
+      dbArgs.Add("@event_date", e.event_date);
+      dbArgs.Add("@event_time_from", e.event_time_from);
+      dbArgs.Add("@event_time_to  ", e.event_time_to);
+      dbArgs.Add("@username       ",  username);
+      dbArgs.Add("@location_id    ", e.location_id);
+      dbArgs.Add("@event_name     ", e.event_name);
+
+      var sql = $@"
+      UPDATE
       
+      UPDATE Event
+      SET
+         event_date = @event_date
+        ,event_time_from = CAST((@event_date  + ' ' +  @event_time_from)AS DATETIME)
+        ,event_time_to = CAST((@event_date  + ' ' +  @event_time_to)AS DATETIME)
+        ,event_name = @event_name
+        ,location_id = @location_id
+        ,updated_by = @username
+        ,updated_on = GETDATE()
+      WHERE id = @event_id
+
+      SELECT * FROM Event
+      WHERE id = @event_id
+      ";
       return new Event();
     }
+
     public static List<string> Validate(List<Event> events)
     {
       var errors = new List<string>();
