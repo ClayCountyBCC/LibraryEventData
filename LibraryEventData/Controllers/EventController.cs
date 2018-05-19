@@ -15,8 +15,8 @@ namespace LibraryEventData.Controllers
     [Route("Event/GetList")]
     public IHttpActionResult GetList(Boolean InCompleteOnly = true, int EventDate = -1, int Location = -1)
     {
-      Event.GetList(InCompleteOnly, EventDate, Location);
-      return Ok();
+      var eventList = Event.GetList(InCompleteOnly, EventDate, Location);
+      return Ok(eventList);
     }
 
     
@@ -26,23 +26,70 @@ namespace LibraryEventData.Controllers
       if(thisEvent == null)
       {
         return InternalServerError();
+
       }
       return Ok(thisEvent);
     }
 
     public IHttpActionResult Save(List<Event> newEvents)
     {
+      var error = new List<string>();
       if (newEvents.Count == 0)
       {
-        return BadRequest("Could not save the events.");
+        error.Add("There were no events to save, please try the request again");
+        return Ok(error);
       }
       else
       {
-        var ua = UserAccess.GetUserAccess(User.Identity.Name);
-        var ne = Event.SaveEvents(newEvents, ua);
-        return Ok(ne);
+
+        if(UserAccess.GetUserAccess(User.Identity.Name).current_access == UserAccess.access_type.admin_access)
+        {
+          var errors = Event.Validate(newEvents);
+          if (errors == null || errors.Count() == 0) 
+          {
+            var ne = Event.SaveEvents(newEvents, User.Identity.Name);
+            if(ne == 0)
+            {
+              errors.Add("Error Saving this list of events. If the issue persists, please reach out to the helpdesk.");
+            }
+          }
+          else
+          {
+            return Ok(errors);
+          }
+
+        }
+        else
+        {
+          error.Add("Events have not been saved, user has incorrect level of access.");
+        }
       }
+      return Ok(error);
+    }
+
+    public IHttpActionResult UpdateEvent(Event existingEvent)
+    {
+      var errors = new List<string>();
+
+
+      if (UserAccess.GetUserAccess(User.Identity.Name).current_access == UserAccess.access_type.admin_access)
+      {
+
+        var validateList = new List<Event>();
+        validateList.Add(existingEvent);
+
+        errors = Event.Validate(validateList);
+        if (errors.Any()) return Ok(errors);
+
+        var ne = Event.UpdateEvent(existingEvent, User.Identity.Name);
+
+      }
+      else
+      {
+        errors.Add("Events have not been saved, user has incorrect level of access.");
+      }
+      return Ok(errors);
     }
 
   }
-}
+} 
