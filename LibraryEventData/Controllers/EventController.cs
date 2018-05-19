@@ -20,18 +20,15 @@ namespace LibraryEventData.Controllers
     }
 
     
-    public IHttpActionResult GetEvent(long id = -1)
+    public IHttpActionResult GetEvent(long id)
     {
       var thisEvent = Event.GetEvent(id);
+      if(thisEvent == null)
+      {
+        return InternalServerError();
 
-      if (thisEvent == null)
-      {
-        return BadRequest($"Event {id} not found");
       }
-      else
-      {
-        return Ok(thisEvent);
-      }
+      return Ok(thisEvent);
     }
 
     public IHttpActionResult Save(List<Event> newEvents)

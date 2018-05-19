@@ -7,7 +7,6 @@ var EventData;
     EventData.AddedEvents = []; // used for the Add Event functionality
     EventData.CurrentAccess = null;
     function Start() {
-        // Uncomment this when the end points are working.
         GetInitialData();
     }
     EventData.Start = Start;

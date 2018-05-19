@@ -11,9 +11,6 @@ namespace EventData
 
   export function Start():void
   {
-    
-    
-    // Uncomment this when the end points are working.
     GetInitialData();
   }
 
@@ -135,6 +132,11 @@ namespace EventData
         modal.classList.remove("is-active");
       }
     }
+  }
+
+  export function ShowError(ErrorText: string):void
+  {
+
   }
 
 }

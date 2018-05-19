@@ -31,6 +31,12 @@
       // and then send that object to the Save Attendance end point.
     }
 
+    public static LoadEventAndAttendance(event: Event)
+    {
+      // this function will take the event and attendance objects
+      // and load them into the attendance form
+
+    }
 
   }
 

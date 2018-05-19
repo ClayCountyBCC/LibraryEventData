@@ -143,8 +143,25 @@ var EventData;
                 events.push(event_1);
             }
             // Convert this to a Save to Server and we're done.
-            if (!error)
+            if (!error) {
                 Event.BuildEventList(events);
+                //Event.SaveEvents(events); // enable on endpoints updated
+            }
+        };
+        Event.SaveEvents = function (events) {
+            XHR.SaveObject("./API/Event/Save", events).then(function (response) {
+                if (response.length === 0) {
+                    // Clear the form
+                    Event.ResetAddEvent();
+                    // Indicate Success
+                    // Not sure how I'm going to do this yet.
+                }
+                else {
+                    // show errors returned from client.
+                }
+            }).catch(function (errors) {
+                // Show error message;
+            });
         };
         Event.ResetAddEvent = function () {
             // This function puts the Add Event page in its initial state
