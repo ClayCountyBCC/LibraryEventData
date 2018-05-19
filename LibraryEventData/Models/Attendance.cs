@@ -10,6 +10,7 @@ namespace LibraryEventData.Models
   {
     public long event_id { get; set; } = -1; // in case we want to pull more than one event at a time.
     public string event_type { get; set; } = "";
+    public List<int> target_audiences { get; set; } = new List<int>();
     public int youth_count { get; set; } = 0;
     public int adult_count { get; set; } = 0;
     public string notes { get; set; } = "";

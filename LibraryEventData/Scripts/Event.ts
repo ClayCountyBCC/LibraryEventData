@@ -197,8 +197,34 @@
       }
 
       // Convert this to a Save to Server and we're done.
-      if(!error) Event.BuildEventList(events);
+      if (!error)
+      {
+        Event.BuildEventList(events);
+        //Event.SaveEvents(events); // enable on endpoints updated
+      }
 
+    }
+
+    public static SaveEvents(events: Array<Event>)
+    {
+      XHR.SaveObject("./API/Event/Save", events).then(function (response)
+      {
+        if (response.length === 0)
+        {
+          // Clear the form
+          Event.ResetAddEvent();
+          // Indicate Success
+          // Not sure how I'm going to do this yet.
+        }
+        else
+        {
+          // show errors returned from client.
+        }
+        
+      }).catch(function (errors)
+      {
+        // Show error message;
+      });
     }
 
     public static ResetAddEvent(): void

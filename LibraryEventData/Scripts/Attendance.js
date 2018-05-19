@@ -12,6 +12,8 @@ var EventData;
             // attendance page and create an attendance object,
             // and then send that object to the Save Attendance end point.
         };
+        Attendance.LoadEventAndAttendance = function (event) {
+        };
         return Attendance;
     }());
     EventData.Attendance = Attendance;

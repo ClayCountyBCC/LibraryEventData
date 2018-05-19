@@ -11,9 +11,6 @@ namespace EventData
 
   export function Start():void
   {
-    
-    
-    // Uncomment this when the end points are working.
     GetInitialData();
   }
 
@@ -63,7 +60,7 @@ namespace EventData
   function PopulateUIElements(EventTypes: Array<TargetData>,
     TargetAudiences: Array<TargetData>,
     Locations: Array<TargetData>,
-    Times: Array<string>)
+    Times: Array<TargetData>)
   {
     // this is a filter
     let locFilter = <HTMLSelectElement>document.getElementById("filterLocation");
@@ -135,6 +132,11 @@ namespace EventData
         modal.classList.remove("is-active");
       }
     }
+  }
+
+  export function ShowError(ErrorText: string):void
+  {
+
   }
 
 }
