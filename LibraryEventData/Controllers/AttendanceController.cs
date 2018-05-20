@@ -14,14 +14,14 @@ namespace LibraryEventData.Controllers
     {
       var errors = new List<string>();
 
-
-      if (UserAccess.GetUserAccess(User.Identity.Name).current_access == UserAccess.access_type.admin_access)
+      var ua = UserAccess.GetUserAccess(User.Identity.Name);
+      if (ua.current_access == UserAccess.access_type.admin_access)
       {
 
         var validateList = new List<Event>();
         validateList.Add(existingEvent);
 
-        if( Event.Validate(validateList).Any()) return Ok(errors);
+        if( Event.Validate(validateList, ua.user_name).Any()) return Ok(errors);
 
         errors = (Attendance.MergeAttendanceData(existingEvent.id, existingEvent.attendance, User.Identity.Name));
         if(errors.Count() == 0)

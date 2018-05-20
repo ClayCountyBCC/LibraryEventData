@@ -106,20 +106,20 @@ namespace LibraryEventData.Models
       }
     }
 
-    public static bool Save_Data<T>(string insertQuery, T item)
+    public static int Save_Data<T>(string insertQuery, T item)
     {
       try
       {
         using (IDbConnection db = new SqlConnection(Get_ConnStr()))
         {
-          db.Execute(insertQuery, item);
-          return true;
+          int i = db.Execute(insertQuery, item);
+          return i;
         }
       }
       catch (Exception ex)
       {
         Log(ex, insertQuery);
-        return false;
+        return -1;
       }
     }
 

@@ -13,15 +13,16 @@ namespace LibraryEventData.Models
   {
     public long id { get; set; }
     public string event_name { get; set; }
-    private DateTime event_date_raw { get; set; }
-    private DateTime event_time_from_raw { get; set; }
-    private DateTime event_time_to_raw { get; set; }
+    public DateTime event_date_raw { get; set; }
+    public DateTime event_time_from_raw { get; set; }
+    public DateTime event_time_to_raw { get; set; }
     public int location_id { get; set; }
     //public List<string> age_groups { get; set; }
     public Attendance attendance { get; set; }
     public string event_date { get; set; }
     public string event_time_from { get; set; }
     public string event_time_to { get; set; }
+    public string added_by { get; set; } = "";
 
     public Event()
     {
@@ -35,84 +36,61 @@ namespace LibraryEventData.Models
       // validate good data on EventDate parameter and setting a default if false in order to prevent
       // unwanted data. I will need to fix this so it is not hard coded values but this works until I can
       // properly use the dynamic parameters with the query.Query<TFirst, TSecond, TTarget>() funt
+
       var EventDateGoodValues = new List<int> { -1, 7, 30, 60 };
       if (!EventDateGoodValues.Contains(EventDate))
       {
         EventDate = 7;
       }
 
-      string sql = $@"
-      
-      USE ClayEventData
-      DECLARE @FromDate DATE = CAST(DATEADD(dd,{EventDate} * -1,GETDATE()) AS DATE);
-      SELECT 
-        E.id,
-        E.event_date event_date_raw,
-        E.event_name,
-        E.event_time_from event_time_from_raw,
-        E.event_time_to event_time_to_raw,
-        E.location_id,
-        E.added_by, 
-        E.added_on, 
-        E.updated_by, 
-        E.updated_on,
-        A.event_id, 
-        A.event_type_id, 
-        A.youth_count,
-        A.adult_count,
-        A.notes,
-        A.added_by, 
-        A.added_on, 
-        A.updated_by, 
-        A.updated_on
-      FROM [Event] E
-      LEFT OUTER JOIN [Attendance] A
-        ON A.event_id = E.id
-      WHERE (CAST(@FromDate AS DATE) = CAST(DATEADD(dd,1,GETDATE()) AS DATE)
-             OR CAST(event_date AS DATE) >= CAST(@FromDate AS DATE))";
+      string sql = GetEventBaseQuery();
 
-
-      var param = new Dapper.DynamicParameters();
-
-      if (Location > 0)
-      {
-        param.Add("@Location", Location);
-        sql += " AND Location_id = @Location";
-      }
+      var dp = new DynamicParameters();
       if (IncompleteOnly)
       {
-        param.Add("@IncompleteOnly", IncompleteOnly);
-        sql += " AND A.event_id IS NULL";
+        sql += " AND A.event_id IS NULL ";
       }
-
+      if (EventDate != -1)
+      {
+        dp.Add("@EventAge", EventDate);
+        sql += "AND DATEDIFF(DAY, E.event_date, CAST(GETDATE() AS DATE)) <= @EventAge ";
+      }
+      if (Location > 0)
+      {
+        dp.Add("@Location", Location);
+        sql += " AND Location_id = @Location ";
+      }
 
       try
       {
-        var query =
-            new SqlConnection(
-              Constants.Get_ConnStr());
+        using (IDbConnection db =
+          new SqlConnection(
+            Constants.Get_ConnStr()))
+        {
+          var events = (List<Event>)db.Query<Event, Attendance, Event>(
+            sql,
+            map: (e, a) =>
+            {
+              e.attendance = a;
+              if (a != null) { e.attendance.GetTargetAudiences(); };
+              e.event_date = e.event_date_raw.ToShortDateString();
+              e.event_time_from = e.event_time_from_raw.ToShortTimeString();
+              e.event_time_to = e.event_time_to_raw.ToShortTimeString();
+              return e;
+            },
+            param: dp,
+            splitOn: "id,event_id"
+          );
 
-        var events = (List<Event>)query.Query<Event, Attendance, Event>(
-          sql,
-          map: (e, a) =>
-          {
-            e.attendance = a;
-            if (a != null) { e.attendance.GetTargetAudiences(); };
-            e.event_date = e.event_date_raw.ToShortDateString();
-            e.event_time_from = e.event_time_from_raw.ToShortTimeString();
-            e.event_time_to = e.event_time_to_raw.ToShortTimeString();
-            return e;
-          },
-
-          splitOn: "id,event_id"
-        );
-
-        return events;
+          return events;
+        }
       }
       catch (Exception ex)
       {
-        Constants.Log(ex, sql);
-        return new List<Event>();
+        new ErrorLog(ex, sql);
+        return null;
+        // null is the right return here because we need a way to 
+        // indicate to the calling function that this processed errored
       }
     }
 
@@ -122,22 +100,14 @@ namespace LibraryEventData.Models
       return events;
     }
 
-    public static Event GetEvent(long event_id)
+    private static string GetEventBaseQuery()
     {
-      if (event_id != -1)
-      {
-        // TODO: GET This event
-        var dbArgs = new Dapper.DynamicParameters();
-        dbArgs.Add("@event_ids", event_id);
-
-        string sql = @"
-      
+      string sql = @"
         USE ClayEventData
-      
         SELECT 
           E.id,
-          E.event_date,
-          E.event_name event_name_raw,
+          E.event_date event_date_raw,
+          E.event_name,
           E.event_time_from event_time_from_raw,
           E.event_time_to event_time_to_raw,
           E.location_id,
@@ -157,49 +127,109 @@ namespace LibraryEventData.Models
         FROM [Event] E
         LEFT OUTER JOIN [Attendance] A
           ON A.event_id = E.id
-        WHERE event_id = @event_id";
-
-        try
-        {
-          var query =
-              new SqlConnection(
-                Constants.Get_ConnStr());
-          var thisEvent = (Event)query.Query<Event, Attendance, Event>(
-            sql,
-            map: (e, a) =>
-            {
-              e.attendance = a;
-              return e;
-            },
-            splitOn: "event_id"
-          );
-
-          return thisEvent;
-        }
-        catch (Exception ex)
-        {
-          Constants.Log(ex, sql);
-          return new Event();
-        }
-
-      }
-      else
-      {
-        return new Event();
-      }
+        WHERE 1 = 1
+        ";
+      return sql;
     }
 
-    public static int SaveEvents(List<Event> events, string username)
+    public static Event GetEvent(long event_id)
     {
+      // TODO: GET This event
+      var dbArgs = new DynamicParameters();
+      dbArgs.Add("@event_id", event_id);
+
+      string sql = GetEventBaseQuery() + " AND E.id = @event_id ";
+
+      try
+      {
+        using (IDbConnection db =
+          new SqlConnection(Constants.Get_ConnStr()))
+        {
+          var thisEvent = (List<Event>)db.Query<Event, Attendance, Event>(
+                      sql,
+                      map: (e, a) =>
+                      {
+                        e.attendance = a;
+                        if (a != null) { e.attendance.GetTargetAudiences(); };
+                        e.event_date = e.event_date_raw.ToString("yyyy-MM-dd");
+                        e.event_time_from = e.event_time_from_raw.ToShortTimeString();
+                        e.event_time_to = e.event_time_to_raw.ToShortTimeString();
+                        return e;
+                      },
+                      param: dbArgs,
+                      splitOn: "event_id"
+                    );
+          if(thisEvent.Count() == 1)
+          {
+            return thisEvent.First();
+          }
+          else
+          {
+            return null;
+          }
+        }
+
+      }
+      catch (Exception ex)
+      {
+        Constants.Log(ex, sql);
+        return null;
+      }
+
+
+    }
+
+    public static int SaveEvents(List<Event> events)
+    {
+
       // this is only called if all events contain valid data
       var errors = new List<string>();
-      var dbArgs = new DynamicParameters();
-      dbArgs.Add("@SaveEvents", "Transaction");
+      // old
+      //var dbArgs = new DynamicParameters();
+      //dbArgs.Add("@SaveEvents", "Transaction");
 
-      var sql = $@"
+      //var sql = $@"
+      //USE ClayEventData;
+      //BEGIN TRY
+      //  BEGIN TRAN @SaveEvents
+      //   INSERT INTO Event (
+      //    event_date,
+      //    event_name,
+      //    event_time_from,
+      //    event_time_to,
+      //    location_id,
+      //    added_by, 
+      //    updated_by, 
+      //    updated_on)
+      //  VALUES ";
+
+      //foreach (var e in events)
+      //{
+      //  sql += $@" (CAST(@event_date AS DATETIME)
+      //            ,{e.event_name}
+      //            ,CAST({e.event_date} + ' ' + {e.event_time_from} AS DATETIME)
+      //            ,CAST({e.event_date} + ' ' + {e.event_time_to} AS DATETIME)
+      //            ,{e.location_id}
+      //            ,{username}
+      //            ,{username}
+      //            ,GETDATE())";
+
+      //  if (events.IndexOf(e) != events.IndexOf(events.Last()))
+      //  {
+      //    sql += ",";
+      //  }
+
+      //}
+
+      //sql += @"
+      //END TRY
+      //BEGIN CATCH 
+      //  ROLLBACK TRAN @SaveEvents
+      //END CATCH";
+      var sql = @"
       USE ClayEventData;
       BEGIN TRY
-        BEGIN TRAN @SaveEvents
+        BEGIN TRAN SaveEvents;
          INSERT INTO Event (
           event_date,
           event_name,
@@ -209,33 +239,26 @@ namespace LibraryEventData.Models
           added_by, 
           updated_by, 
           updated_on)
-        VALUES ";
+        VALUES 
+        (
+          CAST(@event_date_raw AS DATE)
+          ,@event_name
+          ,@event_time_from_raw
+          ,@event_time_to_raw
+          ,@location_id
+          ,@added_by
+          ,@added_by
+          ,GETDATE()
+        )
 
-      foreach (var e in events)
-      {
-        sql += $@" (CAST(@event_date AS DATETIME)
-                  ,{e.event_name}
-                  ,CAST({e.event_date} + ' ' + {e.event_time_from} AS DATETIME)
-                  ,CAST({e.event_date} + ' ' + {e.event_time_to} AS DATETIME)
-                  ,{e.location_id}
-                  ,{username}
-                  ,{username}
-                  ,GETDATE())";
-
-        if (events.IndexOf(e) != events.IndexOf(events.Last()))
-        {
-          sql += ",";
-        }
-
-      }
-
-      sql += @"
+        COMMIT TRAN SaveEvents;
       END TRY
       BEGIN CATCH 
-        ROLLBACK TRAN @SaveEvents
+        ROLLBACK TRAN SaveEvents;
       END CATCH";
 
-      var rowsAffected = Constants.Exec_Query(sql, dbArgs);
+
+      var rowsAffected = Constants.Save_Data<List<Event>>(sql, events);
       return rowsAffected;
 
     }
@@ -272,7 +295,7 @@ namespace LibraryEventData.Models
       return new Event();
     }
 
-    public static List<string> Validate(List<Event> events)
+    public static List<string> Validate(List<Event> events, string username)
     {
       var errors = new List<string>();
 
@@ -281,17 +304,21 @@ namespace LibraryEventData.Models
         errors.Add("There are no events to save. If you have attempted to save a valid event, please try again");
         return errors;
       }
-      var earlyDate = new DateTime().AddYears(-1).Date;
-      var farDate = new DateTime().AddYears(1).Date;
+      var earlyDate = DateTime.Now.AddYears(-1).Date;
+      var farDate = DateTime.Now.AddYears(1).Date;
       var timeList = from t in TargetData.GetCachedTimeList()
                      select t.Label;
       var locationList = (from t in TargetData.GetLocationsRaw()
                           select t).ToList();
 
-
       var count = 1;
-      foreach (var e in events)
+      foreach (Event e in events)
       {
+        e.event_date_raw = DateTime.Parse(e.event_date);
+        e.event_time_from_raw = e.event_date_raw.Date + DateTime.Parse(e.event_time_from).TimeOfDay;
+        e.event_time_to_raw = e.event_date_raw.Date + DateTime.Parse(e.event_time_to).TimeOfDay;
+        e.added_by = username;
+
         var locationName = (from l in locationList where l.Value == e.location_id.ToString() select l.Label).First();
 
         if (e.event_name.Length == 0)
@@ -325,12 +352,7 @@ namespace LibraryEventData.Models
 
       }
 
-      if (errors.Count() > 0)
-      {
-        return errors;
-      }
-
-      return null;
+      return errors;
     }
 
   }

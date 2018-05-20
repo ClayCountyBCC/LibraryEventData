@@ -9,17 +9,23 @@ using LibraryEventData.Models;
 
 namespace LibraryEventData.Controllers
 {
+  [RoutePrefix("API/Event")]
   public class EventController : ApiController
   {
     [HttpGet]
-    [Route("Event/GetList")]
+    [Route("GetList")]
     public IHttpActionResult GetList(Boolean InCompleteOnly = true, int EventDate = -1, int Location = -1)
     {
       var eventList = Event.GetList(InCompleteOnly, EventDate, Location);
+      if(eventList == null)
+      {
+        return InternalServerError();
+      }
       return Ok(eventList);
     }
 
-    
+    [HttpGet]
+    [Route("GetEvent")]
     public IHttpActionResult GetEvent(long id)
     {
       var thisEvent = Event.GetEvent(id);
@@ -31,6 +37,8 @@ namespace LibraryEventData.Controllers
       return Ok(thisEvent);
     }
 
+    [HttpPost]
+    [Route("Save")]
     public IHttpActionResult Save(List<Event> newEvents)
     {
       var error = new List<string>();
@@ -41,13 +49,13 @@ namespace LibraryEventData.Controllers
       }
       else
       {
-
-        if(UserAccess.GetUserAccess(User.Identity.Name).current_access == UserAccess.access_type.admin_access)
+        var ua = UserAccess.GetUserAccess(User.Identity.Name);
+        if (ua.current_access == UserAccess.access_type.admin_access)
         {
-          var errors = Event.Validate(newEvents);
+          var errors = Event.Validate(newEvents, ua.user_name);
           if (errors == null || errors.Count() == 0) 
           {
-            var ne = Event.SaveEvents(newEvents, User.Identity.Name);
+            var ne = Event.SaveEvents(newEvents);
             if(ne == 0)
             {
               errors.Add("Error Saving this list of events. If the issue persists, please reach out to the helpdesk.");
@@ -67,18 +75,20 @@ namespace LibraryEventData.Controllers
       return Ok(error);
     }
 
-    public IHttpActionResult UpdateEvent(Event existingEvent)
+    [HttpPost]
+    [Route("Update")]
+    public IHttpActionResult Update(Event existingEvent)
     {
       var errors = new List<string>();
 
-
-      if (UserAccess.GetUserAccess(User.Identity.Name).current_access == UserAccess.access_type.admin_access)
+      var ua = UserAccess.GetUserAccess(User.Identity.Name);
+      if (ua.current_access == UserAccess.access_type.admin_access)
       {
 
         var validateList = new List<Event>();
         validateList.Add(existingEvent);
 
-        errors = Event.Validate(validateList);
+        errors = Event.Validate(validateList, ua.user_name);
         if (errors.Any()) return Ok(errors);
 
         var ne = Event.UpdateEvent(existingEvent, User.Identity.Name);

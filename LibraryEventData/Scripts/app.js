@@ -6,6 +6,7 @@ var EventData;
     EventData.Locations = [];
     EventData.AddedEvents = []; // used for the Add Event functionality
     EventData.CurrentAccess = null;
+    EventData.CurrentEvent = null;
     function Start() {
         GetInitialData();
     }
@@ -18,9 +19,10 @@ var EventData;
             EventData.Locations = dc.Locations;
             PopulateUIElements(dc.Event_Types, dc.Target_Audiences, dc.Locations, EventData.Times);
             HandleUserAccess();
-            // Event.GetList();
+            EventData.Event.GetList();
         }).catch(function (error) {
             // Notify of error.  If this happens, the app is basically unusable.
+            ShowError("There was an issue loading the initial data.  Please refresh the web page and try again.  If this issue persists, please contact the help desk.");
         });
     }
     function HandleUserAccess() {
@@ -49,6 +51,7 @@ var EventData;
         var locFilter = document.getElementById("filterLocation");
         // these are on the add Attendance menu
         var etSelect = document.getElementById("selectEventType");
+        etSelect.appendChild(Utilities.Create_Option("-1", "Select Event Type", true));
         var taSelect = document.getElementById("selectTargetAudience");
         // this one will only be enabled if the user has admin access.
         var locSelect = document.getElementById("selectLocation");
@@ -100,5 +103,63 @@ var EventData;
         }
     }
     EventData.CloseModals = CloseModals;
+    function ShowError(ErrorText) {
+        SetInputValue("errorText", ErrorText);
+        var errorModal = document.getElementById("showErrors");
+        errorModal.classList.add("is-active");
+    }
+    EventData.ShowError = ShowError;
+    function SetInputValue(id, value) {
+        var e = document.getElementById(id);
+        e.value = value;
+        e.classList.remove("is-danger");
+    }
+    EventData.SetInputValue = SetInputValue;
+    function SetSelectValue(id, value) {
+        var e = document.getElementById(id);
+        e.value = value;
+        e.parentElement.classList.remove("is-danger");
+    }
+    EventData.SetSelectValue = SetSelectValue;
+    function GetSelectValue(id) {
+        var e = document.getElementById(id);
+        if (e.selectedIndex === -1) {
+            e.parentElement.classList.add("is-danger");
+            return "";
+        }
+        else {
+            e.parentElement.classList.remove("is-danger");
+            return e.selectedOptions[0].value;
+        }
+    }
+    EventData.GetSelectValue = GetSelectValue;
+    function GetMultipleSelectValue(id) {
+        var e = document.getElementById(id);
+        if (e.selectedIndex === -1) {
+            e.parentElement.classList.add("is-danger");
+            return [];
+        }
+        else {
+            e.parentElement.classList.remove("is-danger");
+            var values = [];
+            for (var i = 0; i < e.selectedOptions.length; i++) {
+                values.push(e.selectedOptions[i].value);
+            }
+            return values;
+        }
+    }
+    EventData.GetMultipleSelectValue = GetMultipleSelectValue;
+    function GetInputValue(id) {
+        var e = document.getElementById(id);
+        if (e.value.trim() === "") {
+            e.classList.add("is-danger");
+            return "";
+        }
+        else {
+            e.classList.remove("is-danger");
+            return e.value.trim();
+        }
+    }
+    EventData.GetInputValue = GetInputValue;
 })(EventData || (EventData = {}));
 //# sourceMappingURL=app.js.map

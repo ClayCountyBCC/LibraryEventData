@@ -18,18 +18,12 @@ var EventData;
             var eventDate = eventDateElement.selectedOptions[0].value;
             var location = locationElement.selectedOptions[0].value;
             var CompletedOnly = completedElement.checked;
-            var qs = "";
-            if (CompletedOnly) {
-                qs = qs + "&InCompleteOnly=true";
-            }
+            var qs = "?InCompleteOnly=" + CompletedOnly;
             if (eventDate !== "-1") {
                 qs = qs + "&EventDate=" + eventDate;
             }
             if (location !== "-1") {
                 qs = qs + "&Location=" + location;
-            }
-            if (qs.length > 0) {
-                qs = "?" + qs.slice(1);
             }
             XHR.GetArray("./API/Event/GetList", qs).then(function (events) {
                 console.log('Events returned by GetList', events);
@@ -38,23 +32,34 @@ var EventData;
                 // if this happens, we should just notify the user
                 // and stop.  We won't clear the existing Event list, if there are any.
                 // Create Message Modal
-                console.log('bad stuff happened in GetList');
+                console.log('error', error);
+                EventData.ShowError("An error occurred getting the list of events. Please refresh the page and try again. If this issue persists, please contact the help desk.");
             });
+        };
+        Event.Get = function (id) {
+            // this function will return the event that has this id from the server.
+            return XHR.GetObject("./API/Event/GetEvent", "?id=" + id.toString());
         };
         Event.BuildEventList = function (events) {
             // this function is going to clear the current event list table
             // and then rebuild it with the contents of the events array argument.
             var eventList = document.getElementById("eventList");
             Utilities.Clear_Element(eventList);
-            for (var _i = 0, events_1 = events; _i < events_1.length; _i++) {
-                var e = events_1[_i];
+            var _loop_1 = function (e) {
                 var tr = document.createElement("tr");
                 tr.onclick = function () {
                     // this is how we're going go to populate and show the attendance modal.
                     // this function is going to request a this event from the server 
                     // by referencing the id.
-                    var attendance = document.getElementById("addAttendance");
-                    attendance.classList.add("is-active");
+                    Event.Get(e.id).then(function (event) {
+                        EventData.CurrentEvent = event;
+                        EventData.Attendance.LoadEventAndAttendance(event);
+                        var attendance = document.getElementById("addAttendance");
+                        attendance.classList.add("is-active");
+                    }).catch(function (error) {
+                        console.log('error', error);
+                        EventData.ShowError("An error occurred getting the list of events. Please refresh the page and try again. If this issue persists, please contact the help desk.");
+                    });
                 };
                 tr.appendChild(Event.CreateEventListTextCell(e.event_name));
                 var location_1 = EventData.TargetData.GetTargetData(EventData.Locations, e.location_id.toString());
@@ -63,6 +68,10 @@ var EventData;
                 tr.appendChild(Event.CreateEventListTextCell(eventDate));
                 tr.appendChild(Event.CreateEventListCheckboxCell(e.attendance !== null));
                 eventList.appendChild(tr);
+            };
+            for (var _i = 0, events_1 = events; _i < events_1.length; _i++) {
+                var e = events_1[_i];
+                _loop_1(e);
             }
         };
         Event.CreateEventListTextCell = function (value) {
@@ -144,8 +153,8 @@ var EventData;
             }
             // Convert this to a Save to Server and we're done.
             if (!error) {
-                Event.BuildEventList(events);
-                //Event.SaveEvents(events); // enable on endpoints updated
+                //Event.BuildEventList(events);
+                Event.SaveEvents(events); // enable on endpoints updated
             }
         };
         Event.SaveEvents = function (events) {
@@ -161,6 +170,8 @@ var EventData;
                 }
             }).catch(function (errors) {
                 // Show error message;
+                console.log('error', errors);
+                EventData.ShowError("An error occurred while attempting to save these events. Please try again. If this issue persists, please contact the help desk.");
             });
         };
         Event.ResetAddEvent = function () {

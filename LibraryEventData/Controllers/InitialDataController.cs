@@ -9,9 +9,11 @@ using LibraryEventData.Models;
 
 namespace LibraryEventData.Controllers
 {
+  [RoutePrefix("API/InitialData")]
   public class InitialDataController : ApiController
   {
-
+    [Route("Get")]
+    [HttpGet]
     public IHttpActionResult Get()
     {
       try

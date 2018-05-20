@@ -24,7 +24,6 @@
 
     constructor()
     {
-
     }
 
     public static GetList(): void
@@ -37,11 +36,7 @@
       let eventDate = eventDateElement.selectedOptions[0].value;
       let location = locationElement.selectedOptions[0].value;
       let CompletedOnly = completedElement.checked;
-      let qs = "";
-      if (CompletedOnly)
-      {
-        qs = qs + "&InCompleteOnly=true";
-      }
+      let qs = "?InCompleteOnly=" + CompletedOnly;
       if (eventDate !== "-1")
       {
         qs = qs + "&EventDate=" + eventDate;
@@ -50,10 +45,7 @@
       {
         qs = qs + "&Location=" + location;
       }
-      if (qs.length > 0)
-      {
-        qs = "?" + qs.slice(1);
-      }
+
       XHR.GetArray<Event>("./API/Event/GetList", qs).then(function (events)
       {
         console.log('Events returned by GetList', events);
@@ -64,8 +56,15 @@
         // if this happens, we should just notify the user
         // and stop.  We won't clear the existing Event list, if there are any.
         // Create Message Modal
-        console.log('bad stuff happened in GetList');
+        console.log('error', error);
+        EventData.ShowError("An error occurred getting the list of events. Please refresh the page and try again. If this issue persists, please contact the help desk.");
       });
+    }
+
+    public static Get(id: number): Promise<Event>
+    {
+      // this function will return the event that has this id from the server.
+      return XHR.GetObject<Event>("./API/Event/GetEvent", "?id=" + id.toString());
     }
 
     public static BuildEventList(events: Array<Event>): void
@@ -83,8 +82,18 @@
           // this is how we're going go to populate and show the attendance modal.
           // this function is going to request a this event from the server 
           // by referencing the id.
-          let attendance = document.getElementById("addAttendance");
-          attendance.classList.add("is-active");
+          Event.Get(e.id).then(function (event)
+          {
+            EventData.CurrentEvent = event;
+            Attendance.LoadEventAndAttendance(event);
+            let attendance = document.getElementById("addAttendance");
+            attendance.classList.add("is-active");
+          }).catch(function (error)
+          {
+            console.log('error', error);
+            EventData.ShowError("An error occurred getting the list of events. Please refresh the page and try again. If this issue persists, please contact the help desk.");
+          });
+
         }
         tr.appendChild(Event.CreateEventListTextCell(e.event_name));
         let location = TargetData.GetTargetData(EventData.Locations, e.location_id.toString());
@@ -199,8 +208,8 @@
       // Convert this to a Save to Server and we're done.
       if (!error)
       {
-        Event.BuildEventList(events);
-        //Event.SaveEvents(events); // enable on endpoints updated
+        //Event.BuildEventList(events);
+        Event.SaveEvents(events); // enable on endpoints updated
       }
 
     }
@@ -224,6 +233,8 @@
       }).catch(function (errors)
       {
         // Show error message;
+        console.log('error', errors);
+        EventData.ShowError("An error occurred while attempting to save these events. Please try again. If this issue persists, please contact the help desk.");
       });
     }
 

@@ -9,7 +9,7 @@ namespace LibraryEventData.Models
   public class Attendance
   {
     public long event_id { get; set; } = -1;
-    public int event_type { get; set; } = 0;
+    public int event_type_id { get; set; } = 0;
     public int youth_count { get; set; } = 0;
     public int adult_count { get; set; } = 0;
     public string notes { get; set; } = "";
@@ -56,7 +56,7 @@ namespace LibraryEventData.Models
       var dbArgs = new DynamicParameters();
       dbArgs.Add("@username", username);
       dbArgs.Add("@event_id", a.event_id);
-      dbArgs.Add("@event_type", a.event_type);
+      dbArgs.Add("@event_type_id", a.event_type_id);
       dbArgs.Add("@youth_count", a.youth_count);
       dbArgs.Add("@adult_count", a.adult_count);
       dbArgs.Add("@notes", a.notes);
@@ -205,7 +205,7 @@ namespace LibraryEventData.Models
     public static List<string> ValidateAttendance(Attendance a, string username)
     {
       var errors = new List<string>();
-      if (TargetData.GetEventTypesRaw().FirstOrDefault(t => t.Value == a.event_type.ToString()) == null)
+      if (TargetData.GetEventTypesRaw().FirstOrDefault(t => t.Value == a.event_type_id.ToString()) == null)
       {
         errors.Add($@"Invalid 'Event Type'.");
       }
