@@ -1,1 +1,1 @@
-﻿<%@ Application Codebehind="Global.asax.cs" Inherits="LibraryEventData.Global" Language="C#" %>
+﻿<%@ Application Codebehind="Global.asax.cs" Inherits="LibraryEventData.WebApiApplication" Language="C#" %>

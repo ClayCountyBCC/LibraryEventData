@@ -8,8 +8,8 @@ namespace LibraryEventData.Models
 {
   public class UserAccess
   {
-    private const string event_admin_group = ""; // We may make this an argument if we end up using this code elsewhere.
-    private const string event_edit_group = "";
+    private const string event_admin_group = "ClayEventDataAdmins"; // We may make this an argument if we end up using this code elsewhere.
+    //private const string event_edit_group = "";
     private const string mis_access_group = "gICT";
     
     public bool authenticated { get; set; } = false;
@@ -46,7 +46,7 @@ namespace LibraryEventData.Models
           }
           catch (Exception ex)
           {
-            Constants.Log(ex);
+            new ErrorLog(ex);
           }
         }
       }
@@ -91,7 +91,7 @@ namespace LibraryEventData.Models
       }
       catch (Exception ex)
       {
-        Constants.Log(ex);
+        new ErrorLog(ex);
       }
     }
 
@@ -142,7 +142,7 @@ namespace LibraryEventData.Models
       }
       catch (Exception ex)
       {
-        Constants.Log(ex);
+        new ErrorLog(ex);
         return null;
       }
     }
@@ -173,7 +173,7 @@ namespace LibraryEventData.Models
       }
       catch(Exception ex)
       {
-        Constants.Log(ex, "");
+        new ErrorLog(ex,"");
         return null;
       }
     }

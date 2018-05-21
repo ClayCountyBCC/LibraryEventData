@@ -36,7 +36,7 @@ namespace LibraryEventData.Models
       {
         // Handle cached lazy exception by evicting from cache. Thanks to Denis Borovnev for pointing this out!
         _cache.Remove(key);
-        Constants.Log(ex, "");
+        new ErrorLog(ex,"");
         throw;
       }
     }

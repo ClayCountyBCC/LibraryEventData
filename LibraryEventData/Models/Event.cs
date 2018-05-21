@@ -59,7 +59,7 @@ namespace LibraryEventData.Models
         dp.Add("@Location", Location);
         sql += " AND Location_id = @Location ";
       }
-      sql += Environment.NewLine + "ORDER BY A.event_date DESC";
+      sql += Environment.NewLine + "ORDER BY E.event_date DESC";
       try
       {
         using (IDbConnection db = new SqlConnection(Constants.Get_ConnStr()))
@@ -168,7 +168,7 @@ namespace LibraryEventData.Models
       }
       catch (Exception ex)
       {
-        Constants.Log(ex, sql);
+        new ErrorLog(ex,sql);
         return null;
       }
     }

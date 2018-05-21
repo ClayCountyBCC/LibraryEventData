@@ -24,8 +24,6 @@ namespace LibraryEventData.Models
         case "MISSL01":
         case "MISHL05":
         case "CLAYBCCIIS01":
-        case "CLAYBCCDMZIIS01":
-          // will need to add the DMZ machine name(s) here.
           return true;
 
         default:
@@ -47,7 +45,7 @@ namespace LibraryEventData.Models
       }
       catch (Exception ex)
       {
-        Log(ex, query);
+        new ErrorLog(ex, query);
         return null;
       }
     }
@@ -65,7 +63,7 @@ namespace LibraryEventData.Models
       }
       catch (Exception ex)
       {
-        Log(ex, query);
+        new ErrorLog(ex, query);
         return null;
       }
     }
@@ -83,7 +81,7 @@ namespace LibraryEventData.Models
       }
       catch (Exception ex)
       {
-        Log(ex, query);
+        new ErrorLog(ex, query);
         return null;
       }
     }
@@ -101,7 +99,7 @@ namespace LibraryEventData.Models
       }
       catch (Exception ex)
       {
-        Log(ex, query);
+        new ErrorLog(ex, query);
         return -1;
       }
     }
@@ -118,7 +116,7 @@ namespace LibraryEventData.Models
       }
       catch (Exception ex)
       {
-        Log(ex, insertQuery);
+        new ErrorLog(ex, insertQuery);
         return -1;
       }
     }
@@ -129,80 +127,5 @@ namespace LibraryEventData.Models
       return ConfigurationManager.ConnectionStrings[cs].ConnectionString;
     }
 
-    #region Log Code
-
-    public static void Log(Exception ex, string Query = "")
-    {
-      SaveLog(new ErrorLog(ex, Query));
-    }
-
-    public static void Log(string Text, string Message,
-      string Stacktrace, string Source, string Query = "")
-    {
-      ErrorLog el = new ErrorLog(Text, Message, Stacktrace, Source, Query);
-      SaveLog(el);
-    }
-
-    private static void SaveLog(ErrorLog el, string cs = "ProdLog")
-    {
-      string sql = @"
-          INSERT INTO ErrorData 
-          (applicationName, errorText, errorMessage, 
-          errorStacktrace, errorSource, query)  
-          VALUES (@applicationName, @errorText, @errorMessage,
-            @errorStacktrace, @errorSource, @query);";
-      try
-      {
-        using (IDbConnection db = new SqlConnection(Get_ConnStr()))
-        {
-          db.Execute(sql, el);
-        }
-      }
-      catch(Exception ex)
-      {
-        SaveLog(el, "Log");
-        SaveLog(new ErrorLog(ex), "Log");
-      }
-
-    }
-
-    public static void SaveEmail(string to, string subject, string body, string cs = "ProdLog")
-    {
-      string sql = @"
-          INSERT INTO EmailList 
-          (EmailTo, EmailSubject, EmailBody)  
-          VALUES (@To, @Subject, @Body);";
-
-      try
-      {
-        var dbArgs = new Dapper.DynamicParameters();
-        dbArgs.Add("@To", to);
-        dbArgs.Add("@Subject", subject);
-        dbArgs.Add("@Body", body);
-
-        using (IDbConnection db = new SqlConnection(Get_ConnStr()))
-        {
-          db.Execute(sql, dbArgs);
-        }
-      }
-      catch(Exception ex)
-      {
-        // if we fail to save an email to the production server,
-        // let's save it to the backup DB server.
-        if(cs == "ProdLog")
-        {
-          SaveEmail(to, subject, body, "Log");
-        }
-        else
-        {
-          Constants.Log(ex, sql);
-          Constants.Log("Payment Email not sent", subject, body, "");
-        }
-
-      }
-    }
-
-
-    #endregion
   }
 }

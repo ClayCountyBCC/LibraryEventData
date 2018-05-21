@@ -10,10 +10,10 @@ using LibraryEventData.Controllers;
 
 namespace LibraryEventData
 {
-  public class Global : System.Web.HttpApplication
+  public class WebApiApplication : HttpApplication
   {
 
-    protected void Application_Start(object sender, EventArgs e)
+    protected void Application_Start()
     {
       try
       {

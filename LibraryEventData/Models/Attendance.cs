@@ -47,7 +47,7 @@ namespace LibraryEventData.Models
       }
       catch (Exception ex)
       {
-        Constants.Log(ex, sql);
+        new ErrorLog(ex,sql);
         return new Attendance();
       }
     }
@@ -150,7 +150,7 @@ namespace LibraryEventData.Models
       }
       catch (Exception ex)
       {
-        Constants.Log(ex, sql);
+        new ErrorLog(ex,sql);
         return -1;
       }
     }
@@ -228,7 +228,7 @@ namespace LibraryEventData.Models
 //      }
 //      catch(Exception ex)
 //      {
-//        Constants.Log(ex, sql);
+//        new ErrorLog(ex,sql);
 //      }
       
 //      return null;
