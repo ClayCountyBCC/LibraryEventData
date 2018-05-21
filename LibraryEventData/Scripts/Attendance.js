@@ -55,7 +55,7 @@ var EventData;
             var errorsFound = false;
             var a = new Attendance();
             var eventType = EventData.GetSelectValue("selectEventType");
-            if (eventType.length == 0) {
+            if (eventType.length === 0) {
                 errorsFound = true;
             }
             else {

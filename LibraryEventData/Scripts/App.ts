@@ -161,7 +161,7 @@ namespace EventData
   export function GetSelectValue(id: string): string
   {
     let e = <HTMLSelectElement>document.getElementById(id);
-    if (e.selectedIndex === -1)
+    if (e.selectedIndex === -1 || e.value === "-1")
     {
       e.parentElement.classList.add("is-danger");
       return "";
