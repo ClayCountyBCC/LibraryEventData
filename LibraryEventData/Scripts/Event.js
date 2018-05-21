@@ -205,14 +205,18 @@ var EventData;
         };
         Event.SaveEvents = function (events) {
             XHR.SaveObject("./API/Event/Save", events).then(function (response) {
+                console.log('response from Event Save', response);
                 if (response.length === 0) {
                     // Clear the form
                     Event.ResetAddEvent();
+                    Event.GetList();
                     // Indicate Success
-                    // Not sure how I'm going to do this yet.
                 }
                 else {
                     // show errors returned from client.
+                    var errorText = response.join("\n");
+                    console.log('errortext', errorText);
+                    EventData.ShowError(errorText);
                 }
             }).catch(function (errors) {
                 // Show error message;

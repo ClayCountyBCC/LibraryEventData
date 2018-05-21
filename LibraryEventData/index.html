@@ -129,177 +129,14 @@
             <th style="width: 10%;">Finished</th>
           </tr>
         </thead>
-        <tbody id="eventList">
-
-        </tbody>
+        <tbody id="eventList"></tbody>
       </table>
 
-      <div class="modal"
-           id="showErrors">
-        <div onclick="EventData.CloseModals();"
-             class="modal-background"></div>
-        <div class="modal-card">
-          <header class="modal-card-head">
-            <p class="modal-card-title">Error Information</p>
-            <button onclick="EventData.CloseModals();"
-                    class="delete" 
-                    aria-label="close"></button>
-          </header>
-          <section class="modal-card-body">
-            <div class="field">
-              <label class="label">An error has occurred</label>
-              <div class="control">
-                <textarea id="errorText"
-                          rows="4"
-                          class="textarea"></textarea>
-              </div>
-            </div>
-          </section>
-          <footer class="modal-card-foot">
-            <button onclick="EventData.CloseModals();"
-                    class="button is-success">Ok</button>            
-          </footer>
-        </div>
-      </div>
 
 
 
-      <div class="modal"
-           id="addAttendance">
-        <div onclick="EventData.CloseModals();"
-             class="modal-background"></div>
-        <div class="modal-card">
-          <header class="modal-card-head">
-            <p class="modal-card-title">
-              Add Event Attendance
-            </p>
-            <button onclick="EventData.CloseModals();"
-                    type="button"
-                    class="delete"
-                    aria-label="close"></button>
-          </header>
-          <section class="modal-card-body">
 
-            <div class="field is-horizontal">
-              <div class="field-label is-normal">
-                <label class="label">Event Name</label>
-              </div>
-              <div class="field-body">
-                <div class="field is-grouped">
-                  <div class="control is-expanded">
-                    <input type="text"
-                           class="input"
-                           id="eventName" />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="field is-grouped columns">
-              <div class="field column">
-                <label class="label">Location</label>
-                <div class="control">
-                  <div class="select">
-                    <select disabled
-                            id="selectLocation"></select>
-                  </div>
-                </div>
-              </div>
-              <div class="field column">
-                <label class="label">Event Date</label>
-                <div class="control">
-                  <input class="input"
-                         type="date"
-                         id="eventDate" />
-                </div>
-              </div>
-            </div>
-            <div class="field is-grouped columns">
-              <div class="field column">
-                <label class="label">Time From</label>
-                <div class="control">
-                  <div class="select">
-                    <select disabled
-                            id="selectTimeFrom"></select>
-                  </div>
-                </div>
-              </div>
-              <div class="field column">
-                <label class="label">Time To</label>
-                <div class="control">
-                  <div class="select">
-                    <select disabled
-                            id="selectTimeTo"></select>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="field is-grouped columns">
-              <div class="field column">
-                <label class="label">Event Type</label>
-                <div class="control">
-                  <div class="select">
-                    <select id="selectEventType"></select>
-                  </div>
-                </div>
-              </div>
-              <div class="field column">
-                <label class="label">Target Audience</label>
-                <div class="control">
-                  <div class="select is-multiple">
-                    <select multiple
-                            size="2"
-                            id="selectTargetAudience"></select>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="field is-grouped columns">
-              <div class="field column">
-                <label class="label"># Youths Attending</label>
-                <div class="control">
-                  <input class="input"
-                         type="number"
-                         id="youthCount"
-                         value="0"
-                         placeholder="0" />
-                </div>
-              </div>
-              <div class="field column">
-                <label class="label"># Adults Attending</label>
-                <div class="control">
-                  <input class="input"
-                         type="number"
-                         id="adultCount"
-                         value="0"
-                         placeholder="0" />
-                </div>
-              </div>
-            </div>
-            <div class="field">
-              <label class="label">Add any notes here</label>
-              <div class="control">
-                <textarea class="textarea"
-                          rows="2"
-                          id="eventNotes"></textarea>
 
-              </div>
-            </div>
-          </section>
-          <footer class="modal-card-foot">
-            <button onclick="EventData.Attendance.Save();"
-                    type="button"
-                    class="button is-success">
-              Save Changes
-            </button>
-            <button type="button"
-                    onclick="EventData.CloseModals();"
-                    class="button">
-              Cancel
-            </button>
-          </footer>
-        </div>
-
-      </div>
     </section>
 
     <section class="hide"
@@ -357,6 +194,174 @@
       </table>
     </section>
   </div>
+
+  <div class="modal"
+       id="showErrors">
+    <div onclick="EventData.CloseModals();"
+         class="modal-background"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">Error Information</p>
+        <button onclick="EventData.CloseModals();"
+                class="delete"
+                aria-label="close"></button>
+      </header>
+      <section class="modal-card-body">
+        <div class="field">
+          <label class="label">An error has occurred</label>
+          <div class="control">
+            <textarea id="errorText"
+                      rows="4"
+                      class="textarea"></textarea>
+          </div>
+        </div>
+      </section>
+      <footer class="modal-card-foot">
+        <button onclick="EventData.CloseModals();"
+                class="button is-success">
+          Ok
+        </button>
+      </footer>
+    </div>
+  </div>
+
+  <div class="modal"
+       id="addAttendance">
+    <div onclick="EventData.CloseModals();"
+         class="modal-background"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">
+          Add Event Attendance
+        </p>
+        <button onclick="EventData.CloseModals();"
+                type="button"
+                class="delete"
+                aria-label="close"></button>
+      </header>
+      <section class="modal-card-body">
+
+        <div class="field is-horizontal">
+          <div class="field-label is-normal">
+            <label class="label">Event Name</label>
+          </div>
+          <div class="field-body">
+            <div class="field is-grouped">
+              <div class="control is-expanded">
+                <input type="text"
+                       class="input"
+                       id="eventName" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="field is-grouped columns">
+          <div class="field column">
+            <label class="label">Location</label>
+            <div class="control">
+              <div class="select">
+                <select disabled
+                        id="selectLocation"></select>
+              </div>
+            </div>
+          </div>
+          <div class="field column">
+            <label class="label">Event Date</label>
+            <div class="control">
+              <input class="input"
+                     type="date"
+                     id="eventDate" />
+            </div>
+          </div>
+        </div>
+        <div class="field is-grouped columns">
+          <div class="field column">
+            <label class="label">Time From</label>
+            <div class="control">
+              <div class="select">
+                <select disabled
+                        id="selectTimeFrom"></select>
+              </div>
+            </div>
+          </div>
+          <div class="field column">
+            <label class="label">Time To</label>
+            <div class="control">
+              <div class="select">
+                <select disabled
+                        id="selectTimeTo"></select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="field is-grouped columns">
+          <div class="field column">
+            <label class="label">Event Type</label>
+            <div class="control">
+              <div class="select">
+                <select id="selectEventType"></select>
+              </div>
+            </div>
+          </div>
+          <div class="field column">
+            <label class="label">Target Audience</label>
+            <div class="control">
+              <div class="select is-multiple">
+                <select multiple
+                        size="2"
+                        id="selectTargetAudience"></select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="field is-grouped columns">
+          <div class="field column">
+            <label class="label"># Youths Attending</label>
+            <div class="control">
+              <input class="input"
+                     type="number"
+                     id="youthCount"
+                     value="0"
+                     placeholder="0" />
+            </div>
+          </div>
+          <div class="field column">
+            <label class="label"># Adults Attending</label>
+            <div class="control">
+              <input class="input"
+                     type="number"
+                     id="adultCount"
+                     value="0"
+                     placeholder="0" />
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Add any notes here</label>
+          <div class="control">
+            <textarea class="textarea"
+                      rows="2"
+                      id="eventNotes"></textarea>
+
+          </div>
+        </div>
+      </section>
+      <footer class="modal-card-foot">
+        <button onclick="EventData.Attendance.Save();"
+                type="button"
+                class="button is-success">
+          Save Changes
+        </button>
+        <button type="button"
+                onclick="EventData.CloseModals();"
+                class="button">
+          Cancel
+        </button>
+      </footer>
+    </div>
+
+  </div>
+
   <script src="Scripts/es6-promise.min.js"></script>
   <script src="Scripts/XHR.js"></script>
   <script src="Scripts/DataContainer.js"></script>

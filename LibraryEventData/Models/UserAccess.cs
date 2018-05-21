@@ -8,7 +8,7 @@ namespace LibraryEventData.Models
 {
   public class UserAccess
   {
-    private const string event_admin_group = "ClayEventDataAdmins"; // We may make this an argument if we end up using this code elsewhere.
+    private const string event_admin_group = "gClayEventDataAdmins"; // We may make this an argument if we end up using this code elsewhere.
     //private const string event_edit_group = "";
     private const string mis_access_group = "gICT";
     
@@ -124,7 +124,8 @@ namespace LibraryEventData.Models
           case "CLAYBCCDMZIIS01":
             d[""] = new UserAccess("");
             break;
-          default:            
+          default:
+            ParseGroup(mis_access_group, ref d);
             ParseGroup(event_admin_group, ref d);
 
             d[""] = new UserAccess("");
@@ -148,8 +149,9 @@ namespace LibraryEventData.Models
         //un = ""; /* change "" to user_name you wish to test */
         switch (Environment.MachineName.ToUpper())
         {
-          case "MISSL01":
-          case "MISHL05":
+          case "":
+          //case "MISSL01":
+          //case "MISHL05":
             return new UserAccess(un);
           default:
             var d = GetCachedAllUserAccess();

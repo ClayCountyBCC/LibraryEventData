@@ -71,6 +71,8 @@ namespace LibraryEventData.Models
           return TargetData.GetTargetAudienceRaw();
         case "time_list":
           return TargetData.GetCachedTimeList();
+        case "useraccess":
+          return UserAccess.GetAllUserAccess();
         default:
           return null;
       }
