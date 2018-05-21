@@ -72,21 +72,15 @@ namespace LibraryEventData.Models
           }
           var groups = (from g in up.GetAuthorizationGroups()
                         select g.Name).ToList();
-          if(groups.Contains(event_admin_group) || groups.Contains(mis_access_group))
+          if (groups.Contains(event_admin_group) || groups.Contains(mis_access_group))
           {
             current_access = access_type.admin_access;
           }
           else
           {
-            if (groups.Contains(event_edit_group))
-            {
-              current_access = access_type.edit_access;
-            }
-            else
-            {
-              current_access = 0;
-            }
+            current_access = access_type.edit_access;
           }
+
         }
       }
       catch (Exception ex)
@@ -132,7 +126,6 @@ namespace LibraryEventData.Models
             break;
           default:            
             ParseGroup(event_admin_group, ref d);
-            ParseGroup(event_edit_group, ref d);
 
             d[""] = new UserAccess("");
             break;
