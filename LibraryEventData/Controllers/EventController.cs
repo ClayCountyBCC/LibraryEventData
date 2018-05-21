@@ -84,14 +84,15 @@ namespace LibraryEventData.Controllers
       var ua = UserAccess.GetUserAccess(User.Identity.Name);
       if (ua.current_access == UserAccess.access_type.admin_access)
       {
-
-        var validateList = new List<Event>();
-        validateList.Add(existingEvent);
+        var validateList = new List<Event>
+        {
+          existingEvent
+        };
 
         errors = Event.Validate(validateList, ua.user_name);
         if (errors.Any()) return Ok(errors);
 
-        var ne = Event.UpdateEvent(existingEvent, User.Identity.Name);
+        var ne = Event.UpdateEvent(existingEvent);
 
       }
       else

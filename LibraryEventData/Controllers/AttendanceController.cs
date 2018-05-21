@@ -8,31 +8,21 @@ using LibraryEventData.Models;
 
 namespace LibraryEventData.Controllers
 {
+  [RoutePrefix("API/Attendance")]
   public class AttendanceController : ApiController
   {
-    public IHttpActionResult SaveAttendance(Event existingEvent)
+    [HttpPost]
+    [Route("Save")]
+    public IHttpActionResult Save(Attendance attendance)
     {
-      var errors = new List<string>();
-
       var ua = UserAccess.GetUserAccess(User.Identity.Name);
-      if (ua.current_access == UserAccess.access_type.admin_access)
+      attendance.added_by = ua.user_name;
+      var errors =  attendance.Validate();
+      if(errors.Count() > 0) return Ok(errors);
+      int i = attendance.Save();
+      if(i == -1)
       {
-
-        var validateList = new List<Event>();
-        validateList.Add(existingEvent);
-
-        if( Event.Validate(validateList, ua.user_name).Any()) return Ok(errors);
-
-        errors = (Attendance.MergeAttendanceData(existingEvent.id, existingEvent.attendance, User.Identity.Name));
-        if(errors.Count() == 0)
-        {
-
-          Attendance.UpdateOrSaveTargetAudiences(existingEvent.id,existingEvent.attendance.target_audiences);
-        }
-      }
-      else
-      {
-        errors.Add("Events have not been saved, user has incorrect level of access.");
+        errors.Add("There was an error saving the Attendance data.  Please try again and contact the help desk if the issue persists.");
       }
       return Ok(errors);
     }

@@ -17,7 +17,6 @@ namespace LibraryEventData.Models
     public DateTime event_time_from_raw { get; set; }
     public DateTime event_time_to_raw { get; set; }
     public int location_id { get; set; }
-    //public List<string> age_groups { get; set; }
     public Attendance attendance { get; set; }
     public string event_date { get; set; }
     public string event_time_from { get; set; }
@@ -60,12 +59,10 @@ namespace LibraryEventData.Models
         dp.Add("@Location", Location);
         sql += " AND Location_id = @Location ";
       }
-
+      sql += Environment.NewLine + "ORDER BY A.event_date DESC";
       try
       {
-        using (IDbConnection db =
-          new SqlConnection(
-            Constants.Get_ConnStr()))
+        using (IDbConnection db = new SqlConnection(Constants.Get_ConnStr()))
         {
           var events = (List<Event>)db.Query<Event, Attendance, Event>(
             sql,
@@ -134,7 +131,6 @@ namespace LibraryEventData.Models
 
     public static Event GetEvent(long event_id)
     {
-      // TODO: GET This event
       var dbArgs = new DynamicParameters();
       dbArgs.Add("@event_id", event_id);
 
@@ -152,8 +148,8 @@ namespace LibraryEventData.Models
                         e.attendance = a;
                         if (a != null) { e.attendance.GetTargetAudiences(); };
                         e.event_date = e.event_date_raw.ToString("yyyy-MM-dd");
-                        e.event_time_from = e.event_time_from_raw.ToShortTimeString();
-                        e.event_time_to = e.event_time_to_raw.ToShortTimeString();
+                        e.event_time_from = e.event_time_from_raw.ToString("hh:mm tt");
+                        e.event_time_to = e.event_time_to_raw.ToString("hh:mm tt");
                         return e;
                       },
                       param: dbArgs,
@@ -175,8 +171,6 @@ namespace LibraryEventData.Models
         Constants.Log(ex, sql);
         return null;
       }
-
-
     }
 
     public static int SaveEvents(List<Event> events)
@@ -184,48 +178,6 @@ namespace LibraryEventData.Models
 
       // this is only called if all events contain valid data
       var errors = new List<string>();
-      // old
-      //var dbArgs = new DynamicParameters();
-      //dbArgs.Add("@SaveEvents", "Transaction");
-
-      //var sql = $@"
-      //USE ClayEventData;
-      //BEGIN TRY
-      //  BEGIN TRAN @SaveEvents
-      //   INSERT INTO Event (
-      //    event_date,
-      //    event_name,
-      //    event_time_from,
-      //    event_time_to,
-      //    location_id,
-      //    added_by, 
-      //    updated_by, 
-      //    updated_on)
-      //  VALUES ";
-
-      //foreach (var e in events)
-      //{
-      //  sql += $@" (CAST(@event_date AS DATETIME)
-      //            ,{e.event_name}
-      //            ,CAST({e.event_date} + ' ' + {e.event_time_from} AS DATETIME)
-      //            ,CAST({e.event_date} + ' ' + {e.event_time_to} AS DATETIME)
-      //            ,{e.location_id}
-      //            ,{username}
-      //            ,{username}
-      //            ,GETDATE())";
-
-      //  if (events.IndexOf(e) != events.IndexOf(events.Last()))
-      //  {
-      //    sql += ",";
-      //  }
-
-      //}
-
-      //sql += @"
-      //END TRY
-      //BEGIN CATCH 
-      //  ROLLBACK TRAN @SaveEvents
-      //END CATCH";
       var sql = @"
       USE ClayEventData;
       BEGIN TRY
@@ -263,36 +215,21 @@ namespace LibraryEventData.Models
 
     }
 
-    public static Event UpdateEvent(Event e, string username)
+    public static int UpdateEvent(Event e)
     {
-      // this function is called only if new event data is valid
-      var dbArgs = new DynamicParameters();
-      dbArgs.Add("@event_id",e.id);
-      dbArgs.Add("@event_date", e.event_date);
-      dbArgs.Add("@event_time_from", e.event_time_from);
-      dbArgs.Add("@event_time_to  ", e.event_time_to);
-      dbArgs.Add("@username       ",  username);
-      dbArgs.Add("@location_id    ", e.location_id);
-      dbArgs.Add("@event_name     ", e.event_name);
-
-      var sql = $@"
-      UPDATE
-      
+      var sql = @"
+      USE ClayEventData;
       UPDATE Event
       SET
-         event_date = @event_date
-        ,event_time_from = CAST((@event_date  + ' ' +  @event_time_from)AS DATETIME)
-        ,event_time_to = CAST((@event_date  + ' ' +  @event_time_to)AS DATETIME)
+         event_date = @event_date_raw
+        ,event_time_from = @event_time_from_raw
+        ,event_time_to = @event_time_to_raw
         ,event_name = @event_name
         ,location_id = @location_id
-        ,updated_by = @username
+        ,updated_by = @added_by
         ,updated_on = GETDATE()
-      WHERE id = @event_id
-
-      SELECT * FROM Event
-      WHERE id = @event_id
-      ";
-      return new Event();
+      WHERE id = @id";
+      return Constants.Save_Data<Event>(sql, e);
     }
 
     public static List<string> Validate(List<Event> events, string username)
@@ -306,10 +243,9 @@ namespace LibraryEventData.Models
       }
       var earlyDate = DateTime.Now.AddYears(-1).Date;
       var farDate = DateTime.Now.AddYears(1).Date;
-      var timeList = from t in TargetData.GetCachedTimeList()
-                     select t.Label;
-      var locationList = (from t in TargetData.GetLocationsRaw()
-                          select t).ToList();
+      var timeList = (from t in TargetData.GetCachedTimeList()
+                     select t.Label).ToList();
+      List<TargetData> locationList = TargetData.GetCachedLocations();
 
       var count = 1;
       foreach (Event e in events)

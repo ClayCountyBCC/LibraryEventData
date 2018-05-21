@@ -128,6 +128,71 @@
       return td;
     }
 
+    public static CreateEventFromAttendance(): Event
+    {
+      let errorsFound = false;
+      let e = new Event();
+      let eventName = EventData.GetInputValue("eventName");
+      if (eventName.length === 0)
+      {
+        errorsFound = true;
+      }
+      else
+      {
+        e.event_name = eventName;
+      }
+
+      let location = EventData.GetSelectValue("selectLocation");
+      if (location.length === 0)
+      {
+        errorsFound = true;
+      }
+      else
+      {
+        e.location_id = parseInt(location);
+      }
+
+      let eventDate = EventData.GetInputValue("eventDate");
+      if (eventDate.length === 0)
+      {
+        errorsFound = true;
+      }
+      else
+      {
+        e.event_date = eventDate;
+      }
+
+      let timeFrom = EventData.GetSelectValue("selectTimeFrom");
+      if (timeFrom.length === 0)
+      {
+        errorsFound = true;
+      }
+      else
+      {
+        e.event_time_from = timeFrom;
+      }
+
+      let timeTo = EventData.GetSelectValue("selectTimeTo");
+      if (timeTo.length === 0)
+      {
+        errorsFound = true;
+      }
+      else
+      {
+        e.event_time_to = timeTo;
+      }
+
+      if (errorsFound)
+      {
+        return null;
+      }
+      else
+      {
+        e.id = EventData.CurrentEvent.id;
+        return e;
+      }
+    }
+
     public static Save(): void
     {
       // this function will take the contents of the
@@ -235,6 +300,27 @@
         // Show error message;
         console.log('error', errors);
         EventData.ShowError("An error occurred while attempting to save these events. Please try again. If this issue persists, please contact the help desk.");
+      });
+    }
+
+    public static UpdateEvent(event: Event)
+    {
+      XHR.SaveObject("./API/Event/Update", event).then(function (response)
+      {
+        if (response.length === 0)
+        {
+          // Do nothing
+        }
+        else
+        {
+          // show errors returned from client.
+        }
+
+      }).catch(function (errors)
+      {
+        // Show error message;
+        console.log('error', errors);
+        EventData.ShowError("An error occurred while attempting to update this event. Please try again. If this issue persists, please contact the help desk.");
       });
     }
 

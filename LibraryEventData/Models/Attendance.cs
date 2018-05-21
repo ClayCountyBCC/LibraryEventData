@@ -14,6 +14,7 @@ namespace LibraryEventData.Models
     public int adult_count { get; set; } = 0;
     public string notes { get; set; } = "";
     public List<int> target_audiences { get; set; }
+    public string added_by { get; set; } = "";
 
     // When getting Event from client, it will always have attendance data
     // If attendance data is 'empty', it will need to be null
@@ -24,7 +25,7 @@ namespace LibraryEventData.Models
 
     public static Attendance GetEventAttendenceData(long event_id)
     {
-      var dbArgs = new Dapper.DynamicParameters();
+      var dbArgs = new DynamicParameters();
       dbArgs.Add("@event_id", event_id);
       string sql = @"
         USE ClayEventData;
@@ -51,23 +52,49 @@ namespace LibraryEventData.Models
       }
     }
 
-    public static  List<string> MergeAttendanceData(long event_id, Attendance a, string username)
+    public List<string> Validate()
     {
-      var dbArgs = new DynamicParameters();
-      dbArgs.Add("@username", username);
-      dbArgs.Add("@event_id", a.event_id);
-      dbArgs.Add("@event_type_id", a.event_type_id);
-      dbArgs.Add("@youth_count", a.youth_count);
-      dbArgs.Add("@adult_count", a.adult_count);
-      dbArgs.Add("@notes", a.notes);
+      var errors = new List<string>();
+      var eventTypes = (from e in TargetData.GetCachedEventTypes()
+                        select e.Value).ToList();
+      var targetAudiences = (from ta in TargetData.GetCachedTargetAudience()
+                             select ta.Value).ToList();
+
+
+      if (!eventTypes.Contains(event_type_id.ToString()))
+      {
+        errors.Add("An invalid Event Type was selected, please check your selection and try again.");
+      }
+      foreach(int ta in target_audiences)
+      {
+        if (!targetAudiences.Contains(ta.ToString()))
+        {
+          errors.Add("An invalid Target Audience was selected, please check your selection and try again.");
+        }
+      }
+      if(youth_count < 0)
+      {
+        errors.Add("The youth count cannot be set to less than 0.");
+      }
+
+      if (adult_count < 0)
+      {
+        errors.Add("The adult count cannot be set to less than 0.");
+      }
+      return errors;
+    }
+
+    public int Save()
+    {
 
       var error = new List<string>();
       var sql = @"
-      
+      USE ClayEventData;
+
       MERGE INTO Attendance A
       USING (SELECT * FROM ( SELECT
         @event_id event_id,
-        @username username,
+        @added_by added_by,
         @event_type_id event_type_id,
         @youth_count youth_count,
         @adult_count adult_count,
@@ -76,51 +103,55 @@ namespace LibraryEventData.Models
         ON A.event_id = B.event_id
 
       WHEN NOT MATCHED BY TARGET THEN
-      INSERT 
-        (event_id
-        ,event_type_id 
-        ,youth_count
-        ,adult_count
-        ,notes
-        ,added_by
-        ,updated_by
-        ,updated_on)
-      VALUES
-        (@event_id
-        ,@event_type_id
-        ,@youth_count
-        ,@adult_count
-        ,@notes
-        ,@username
-        ,@username
-        ,GETDATE())
+        INSERT 
+          (event_id
+          ,event_type_id 
+          ,youth_count
+          ,adult_count
+          ,notes
+          ,added_by
+          ,updated_by
+          ,updated_on)
+        VALUES
+          (@event_id
+          ,@event_type_id
+          ,@youth_count
+          ,@adult_count
+          ,@notes
+          ,@added_by
+          ,@added_by
+          ,GETDATE())
 
       WHEN MATCHED THEN
-      UPDATE 
-      SET 
-        event_type_id = @event_type_id
-       ,youth_count = @youth_count
-       ,adult_count = @adult_count
-       ,notes = @notes
-       ,added_by = @username
-       ,updated_by = @username
-       ,updated_on = GETDATE();
+        UPDATE 
+        SET 
+          event_type_id = @event_type_id
+         ,youth_count = @youth_count
+         ,adult_count = @adult_count
+         ,notes = @notes
+         ,updated_by = @added_by
+         ,updated_on = GETDATE();
+
+      -- Update the Target Audiences here
+      DELETE FROM Event_Target_Audiences
+      WHERE event_id=@event_id;
+
+      INSERT INTO Event_Target_Audiences 
+        (event_id, target_audience_id)
+      SELECT @event_id, id
+      FROM Target_Audience
+      WHERE id IN @target_audiences
 
       ";
       try
       {
-        var rowsAffected = Constants.Exec_Query(sql, dbArgs);
-        if(rowsAffected == 0)
-        {
-          error.Add("There was an issue saving the Attendance data, please try again. If this issue persists, please contact the help desk.");
-        }
-        return error;
+        int rowsAffected = Constants.Save_Data<Attendance>(sql, this);
+        return rowsAffected;
       }
       catch (Exception ex)
       {
         Constants.Log(ex, sql);
-        error.Add("There was an issue saving the Attendance data, please try again. If this issue persists, please contact the help desk.");
-        return error;
+        return -1;
       }
     }
 
@@ -145,72 +176,64 @@ namespace LibraryEventData.Models
       }
     }
 
-    public static List<String> UpdateOrSaveTargetAudiences(long event_id, List<int> target_audience_ids)
-    {
-      var Errors = new List<string>();
-      var dbArgs = new DynamicParameters();
-      dbArgs.Add("@event_id", event_id);
-      dbArgs.Add("@target_audience_ids", target_audience_ids);
+//    public static List<String> UpdateOrSaveTargetAudiences(long event_id, List<int> target_audience_ids)
+//    {
+//      var Errors = new List<string>();
+//      var dbArgs = new DynamicParameters();
+//      dbArgs.Add("@event_id", event_id);
+//      dbArgs.Add("@target_audience_ids", target_audience_ids);
 
-      var sql = @"
-      -- CREATE TABLE VARIABLE
-      DECLARE @event_target_audience_ids TABLE
-      (
-        event_id INT,
-        event_target_audience_id INT
-      ) 
-      -- INSERT DATA TO SAVE
-      INSERT INTO @event_target_audience_ids
-      (event_id,event_target_audience_id) 
-      VALUES
+//      var sql = @"
+//      -- CREATE TABLE VARIABLE
+//      DECLARE @event_target_audience_ids TABLE
+//      (
+//        event_id INT,
+//        event_target_audience_id INT
+//      ) 
+//      -- INSERT DATA TO SAVE
+//      INSERT INTO @event_target_audience_ids
+//      (event_id,event_target_audience_id) 
+//      VALUES
 
 
-      -- DELETE ALL ROWS ASSOCIATED WITH THE event_id
-      DELETE Event_Target_Audiences
-      WHERE event_id = @event_id
-";
+//      -- DELETE ALL ROWS ASSOCIATED WITH THE event_id
+//      DELETE Event_Target_Audiences
+//      WHERE event_id = @event_id
+//";
 
-      foreach (var i in target_audience_ids)
-      {
-        sql += " (@event_id, i)";
+//      foreach (var i in target_audience_ids)
+//      {
+//        sql += " (@event_id, i)";
         
-        if(target_audience_ids.IndexOf(i) != target_audience_ids.IndexOf(target_audience_ids.Last()))
-        {
-          sql += ",";
-        }
-      }
+//        if(target_audience_ids.IndexOf(i) != target_audience_ids.IndexOf(target_audience_ids.Last()))
+//        {
+//          sql += ",";
+//        }
+//      }
 
-      sql += @"
+//      sql += @"
       
-      INSERT INTO Event_Target_Audiences
-      SELECT event_id, event_target_audience_id
-      FROM @event_target_audience_ids
-      ORDER BY event_target_audience_id";
+//      INSERT INTO Event_Target_Audiences
+//      SELECT event_id, event_target_audience_id
+//      FROM @event_target_audience_ids
+//      ORDER BY event_target_audience_id";
 
-      try
-      {
-        var rowsAffected = Constants.Exec_Query(sql, dbArgs);
-        if (rowsAffected == 0)
-        {
-          Errors.Add("There was an issue saving the Target Audience Data");
-        }
-      }
-      catch(Exception ex)
-      {
-        Constants.Log(ex, sql);
-      }
+//      try
+//      {
+//        var rowsAffected = Constants.Exec_Query(sql, dbArgs);
+//        if (rowsAffected == 0)
+//        {
+//          Errors.Add("There was an issue saving the Target Audience Data");
+//        }
+//      }
+//      catch(Exception ex)
+//      {
+//        Constants.Log(ex, sql);
+//      }
       
-      return null;
-    }
-    public static List<string> ValidateAttendance(Attendance a, string username)
-    {
-      var errors = new List<string>();
-      if (TargetData.GetEventTypesRaw().FirstOrDefault(t => t.Value == a.event_type_id.ToString()) == null)
-      {
-        errors.Add($@"Invalid 'Event Type'.");
-      }
+//      return null;
+//    }
 
-      return errors;
-    }
+
   }
 }

@@ -23,6 +23,13 @@ namespace LibraryEventData.Models
       this.Value = value;
     }
 
+        
+
+    public static List<TargetData> GetCachedLocations()
+    {
+      return (List<TargetData>)MyCache.GetItem("locations");
+    }
+
     public static List<TargetData> GetLocationsRaw()
     {
       string sql = @"
@@ -39,6 +46,11 @@ namespace LibraryEventData.Models
 
     }
 
+    public static List<TargetData> GetCachedEventTypes()
+    {
+      return (List<TargetData>)MyCache.GetItem("event_types");
+    }
+
     public static List<TargetData> GetEventTypesRaw()
     {
       string sql = @"
@@ -49,6 +61,11 @@ namespace LibraryEventData.Models
       ORDER BY [Event_Type]";
 
       return Constants.Get_Data<TargetData>(sql);
+    }
+
+    public static List<TargetData> GetCachedTargetAudience()
+    {
+      return (List<TargetData>)MyCache.GetItem("target_audience");
     }
 
     public static List<TargetData> GetTargetAudienceRaw()

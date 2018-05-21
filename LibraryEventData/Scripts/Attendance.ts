@@ -34,6 +34,7 @@
       // first let's create event and attendance objects from
       // the form
       let attendance = Attendance.CreateAttendance();
+      console.log('attendance', attendance);
       // this also validates the attendance
       if (attendance === null)
       {
@@ -41,10 +42,40 @@
       }
 
       // if they they have admin access, let's save the event too
-      // let event = Event.CreateEventFromAttendance();
 
 
       // then let's save the attendance
+      Attendance.SaveAttendance(attendance);
+    }
+
+    public static SaveAttendance(attendance: Attendance)
+    {
+      XHR.SaveObject("./API/Attendance/Save", attendance).then(function (response)
+      {
+        if (response.length === 0)
+        {
+          if (EventData.CurrentAccess.current_access === access_type.admin_access)
+          {
+            let event = Event.CreateEventFromAttendance();
+            if (event === null) return;
+            Event.UpdateEvent(event);
+          }
+          EventData.CloseModals();
+          EventData.Event.GetList();
+        }
+        else
+        {
+          let errorText = response.join("\r\n");
+          console.log('error', errorText);
+          EventData.ShowError(errorText);
+        }
+
+      }).catch(function (errors)
+      {
+        // Show error message;
+        console.log('error', errors);
+        EventData.ShowError("An error occurred while attempting to update this event. Please try again. If this issue persists, please contact the help desk.");
+      });
     }
 
     public static CreateAttendance():Attendance
