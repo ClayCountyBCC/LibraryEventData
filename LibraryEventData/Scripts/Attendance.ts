@@ -65,6 +65,7 @@
         }
         else
         {
+          EventData.CloseModals();
           let errorText = response.join("\r\n");
           console.log('error', errorText);
           EventData.ShowError(errorText);

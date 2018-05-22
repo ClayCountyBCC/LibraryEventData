@@ -47,7 +47,7 @@ namespace LibraryEventData.Models
       }
       catch (Exception ex)
       {
-        new ErrorLog(ex,sql);
+        new ErrorLog(ex, sql);
         return new Attendance();
       }
     }
@@ -65,14 +65,14 @@ namespace LibraryEventData.Models
       {
         errors.Add("An invalid Event Type was selected, please check your selection and try again.");
       }
-      foreach(int ta in target_audiences)
+      foreach (int ta in target_audiences)
       {
         if (!targetAudiences.Contains(ta.ToString()))
         {
           errors.Add("An invalid Target Audience was selected, please check your selection and try again.");
         }
       }
-      if(youth_count < 0)
+      if (youth_count < 0)
       {
         errors.Add("The youth count cannot be set to less than 0.");
       }
@@ -150,7 +150,7 @@ namespace LibraryEventData.Models
       }
       catch (Exception ex)
       {
-        new ErrorLog(ex,sql);
+        new ErrorLog(ex, sql);
         return -1;
       }
     }
@@ -176,64 +176,27 @@ namespace LibraryEventData.Models
       }
     }
 
-//    public static List<String> UpdateOrSaveTargetAudiences(long event_id, List<int> target_audience_ids)
-//    {
-//      var Errors = new List<string>();
-//      var dbArgs = new DynamicParameters();
-//      dbArgs.Add("@event_id", event_id);
-//      dbArgs.Add("@target_audience_ids", target_audience_ids);
+    public static DateTime GetAttendanceDate(long event_id)
+    {
+      var param = new DynamicParameters();
+      param.Add("@event_id", event_id);
+      var sql = $@"
+        USE ClayEventData;
 
-//      var sql = @"
-//      -- CREATE TABLE VARIABLE
-//      DECLARE @event_target_audience_ids TABLE
-//      (
-//        event_id INT,
-//        event_target_audience_id INT
-//      ) 
-//      -- INSERT DATA TO SAVE
-//      INSERT INTO @event_target_audience_ids
-//      (event_id,event_target_audience_id) 
-//      VALUES
-
-
-//      -- DELETE ALL ROWS ASSOCIATED WITH THE event_id
-//      DELETE Event_Target_Audiences
-//      WHERE event_id = @event_id
-//";
-
-//      foreach (var i in target_audience_ids)
-//      {
-//        sql += " (@event_id, i)";
-        
-//        if(target_audience_ids.IndexOf(i) != target_audience_ids.IndexOf(target_audience_ids.Last()))
-//        {
-//          sql += ",";
-//        }
-//      }
-
-//      sql += @"
-      
-//      INSERT INTO Event_Target_Audiences
-//      SELECT event_id, event_target_audience_id
-//      FROM @event_target_audience_ids
-//      ORDER BY event_target_audience_id";
-
-//      try
-//      {
-//        var rowsAffected = Constants.Exec_Query(sql, dbArgs);
-//        if (rowsAffected == 0)
-//        {
-//          Errors.Add("There was an issue saving the Target Audience Data");
-//        }
-//      }
-//      catch(Exception ex)
-//      {
-//        new ErrorLog(ex,sql);
-//      }
-      
-//      return null;
-//    }
-
-
+        SELECT added_on
+        FROM Attendance
+        WHERE event_id = @event_id
+      ";
+      try
+      {
+        var date = Constants.Get_Data<DateTime>(sql, param).First();
+        return date;
+      }
+      catch (Exception ex)
+      {
+        new ErrorLog(ex, sql);
+        return DateTime.MinValue.Date;
+      }
+    }
   }
 }

@@ -38,6 +38,7 @@ var EventData;
                     EventData.Event.GetList();
                 }
                 else {
+                    EventData.CloseModals();
                     var errorText = response.join("\r\n");
                     console.log('error', errorText);
                     EventData.ShowError(errorText);

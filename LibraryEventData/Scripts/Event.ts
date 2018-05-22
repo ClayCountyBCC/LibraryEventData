@@ -294,6 +294,7 @@
         else
         {
           // show errors returned from client.
+          EventData.CloseModals();
           let errorText = response.join("\n");
           console.log('errortext', errorText);
           EventData.ShowError(errorText);
@@ -302,6 +303,7 @@
       }).catch(function (errors)
       {
         // Show error message;
+        EventData.CloseModals();
         console.log('error', errors);
         EventData.ShowError("An error occurred while attempting to save these events. Please try again. If this issue persists, please contact the help desk.");
       });
@@ -317,8 +319,10 @@
         }
         else
         {
-          // show errors returned from client.
-        }
+          EventData.CloseModals();
+          let errorText = response.join("\n");
+          console.log('errortext', errorText);
+          EventData.ShowError(errorText);        }
 
       }).catch(function (errors)
       {
