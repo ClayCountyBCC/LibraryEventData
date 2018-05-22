@@ -36,7 +36,7 @@ namespace LibraryEventData.Models
       // unwanted data. I will need to fix this so it is not hard coded values but this works until I can
       // properly use the dynamic parameters with the query.Query<TFirst, TSecond, TTarget>() funt
 
-      var EventDateGoodValues = new List<int> { -1, 7, 30, 60 };
+      var EventDateGoodValues = new List<int> { -1, 7, 14, 28,56 };
       if (!EventDateGoodValues.Contains(EventDate))
       {
         EventDate = 7;
@@ -52,14 +52,15 @@ namespace LibraryEventData.Models
       if (EventDate != -1)
       {
         dp.Add("@EventAge", EventDate);
-        sql += "AND DATEDIFF(DAY, E.event_date, CAST(GETDATE() AS DATE)) <= @EventAge ";
+        sql += @"AND DATEDIFF(DAY, E.event_date, CAST(GETDATE() AS DATE)) <=  @EventAge
+                 AND DATEDIFF(DAY, E.event_date, CAST(GETDATE() AS DATE)) >= -@EventAge ";
       }
       if (Location > 0)
       {
         dp.Add("@Location", Location);
-        sql += " AND Location_id = @Location ";
+        sql += "AND Location_id = @Location ";
       }
-      sql += Environment.NewLine + "ORDER BY E.event_date DESC";
+      sql += Environment.NewLine + "ORDER BY E.event_date ASC";
       try
       {
         using (IDbConnection db = new SqlConnection(Constants.Get_ConnStr()))

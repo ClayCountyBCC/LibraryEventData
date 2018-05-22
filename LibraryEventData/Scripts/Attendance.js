@@ -38,6 +38,7 @@ var EventData;
                     EventData.Event.GetList();
                 }
                 else {
+                    EventData.CloseModals();
                     var errorText = response.join("\r\n");
                     console.log('error', errorText);
                     EventData.ShowError(errorText);
@@ -55,7 +56,7 @@ var EventData;
             var errorsFound = false;
             var a = new Attendance();
             var eventType = EventData.GetSelectValue("selectEventType");
-            if (eventType.length == 0) {
+            if (eventType.length === 0) {
                 errorsFound = true;
             }
             else {

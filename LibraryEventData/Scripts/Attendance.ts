@@ -65,6 +65,7 @@
         }
         else
         {
+          EventData.CloseModals();
           let errorText = response.join("\r\n");
           console.log('error', errorText);
           EventData.ShowError(errorText);
@@ -86,7 +87,7 @@
       let errorsFound = false;
       let a = new Attendance();
       let eventType = EventData.GetSelectValue("selectEventType");
-      if (eventType.length == 0)
+      if (eventType.length === 0)
       {
         errorsFound = true;
       }
