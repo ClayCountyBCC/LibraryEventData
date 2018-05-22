@@ -398,7 +398,10 @@
       control.classList.add("control");
       let eventDate = document.createElement("input");
       eventDate.classList.add("input");
-      eventDate.type = "date";
+      //works in IE
+      eventDate.setAttribute("type", "date");
+      //Does not work in IE
+      //eventDate.type = "date";
       eventDate.id = "addEventDate" + id.toString();
       control.appendChild(eventDate);
       field.appendChild(control);
