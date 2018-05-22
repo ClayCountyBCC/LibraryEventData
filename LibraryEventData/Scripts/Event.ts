@@ -33,8 +33,8 @@
       let eventDateElement = <HTMLSelectElement>document.getElementById("filterEventDate");
       let locationElement = <HTMLSelectElement>document.getElementById("filterLocation");
       let completedElement = <HTMLInputElement>document.getElementById("filterInComplete");
-      let eventDate = eventDateElement.selectedOptions[0].value;
-      let location = locationElement.selectedOptions[0].value;
+      let eventDate = eventDateElement.value;
+      let location = locationElement.value;
       let CompletedOnly = completedElement.checked;
       let qs = "?InCompleteOnly=" + CompletedOnly;
       if (eventDate !== "-1")

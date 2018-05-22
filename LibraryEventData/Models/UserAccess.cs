@@ -150,8 +150,8 @@ namespace LibraryEventData.Models
         switch (Environment.MachineName.ToUpper())
         {
           case "":
-          //case "MISSL01":
-          //case "MISHL05":
+          case "MISSL01":
+          case "MISHL05":
             return new UserAccess(un);
           default:
             var d = GetCachedAllUserAccess();

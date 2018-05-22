@@ -15,8 +15,8 @@ var EventData;
             var eventDateElement = document.getElementById("filterEventDate");
             var locationElement = document.getElementById("filterLocation");
             var completedElement = document.getElementById("filterInComplete");
-            var eventDate = eventDateElement.selectedOptions[0].value;
-            var location = locationElement.selectedOptions[0].value;
+            var eventDate = eventDateElement.value;
+            var location = locationElement.value;
             var CompletedOnly = completedElement.checked;
             var qs = "?InCompleteOnly=" + CompletedOnly;
             if (eventDate !== "-1") {
