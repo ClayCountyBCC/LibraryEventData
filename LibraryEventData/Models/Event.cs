@@ -13,6 +13,8 @@ namespace LibraryEventData.Models
   {
     public long id { get; set; }
     public string event_name { get; set; }
+    public int event_type_id { get; set; } = 0;
+    public List<int> target_audiences { get; set; }
     public DateTime event_date_raw { get; set; }
     public DateTime event_time_from_raw { get; set; }
     public DateTime event_time_to_raw { get; set; }
@@ -52,8 +54,7 @@ namespace LibraryEventData.Models
       if (EventDate != -1)
       {
         dp.Add("@EventAge", EventDate);
-        sql += @"AND DATEDIFF(DAY, E.event_date, CAST(GETDATE() AS DATE)) <=  @EventAge
-                 AND DATEDIFF(DAY, E.event_date, CAST(GETDATE() AS DATE)) >= -@EventAge ";
+        sql += " AND DATEDIFF(DAY, E.event_date, CAST(GETDATE() AS DATE)) BETWEEN -@EventAge AND @EventAge";
       }
       if (Location > 0)
       {
@@ -108,6 +109,7 @@ namespace LibraryEventData.Models
           E.event_name,
           E.event_time_from event_time_from_raw,
           E.event_time_to event_time_to_raw,
+          E.event_type_id,
           E.location_id,
           E.added_by, 
           E.added_on, 
@@ -186,6 +188,7 @@ namespace LibraryEventData.Models
          INSERT INTO Event (
           event_date,
           event_name,
+          event_type_id,
           event_time_from,
           event_time_to,
           location_id,
@@ -196,6 +199,7 @@ namespace LibraryEventData.Models
         (
           CAST(@event_date_raw AS DATE)
           ,@event_name
+          ,@event_type_id
           ,@event_time_from_raw
           ,@event_time_to_raw
           ,@location_id
@@ -226,6 +230,7 @@ namespace LibraryEventData.Models
         ,event_time_from = @event_time_from_raw
         ,event_time_to = @event_time_to_raw
         ,event_name = @event_name
+        ,event_type_id = @event_type_id
         ,location_id = @location_id
         ,updated_by = @added_by
         ,updated_on = GETDATE()

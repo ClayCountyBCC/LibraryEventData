@@ -9,11 +9,11 @@ namespace LibraryEventData.Models
   public class Attendance
   {
     public long event_id { get; set; } = -1;
-    public int event_type_id { get; set; } = 0;
+    
     public int youth_count { get; set; } = 0;
     public int adult_count { get; set; } = 0;
     public string notes { get; set; } = "";
-    public List<int> target_audiences { get; set; }
+    
     public string added_by { get; set; } = "";
 
     // When getting Event from client, it will always have attendance data
