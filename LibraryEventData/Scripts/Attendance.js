@@ -13,15 +13,26 @@ var EventData;
             // and then send that object to the Save Attendance end point.
             // first let's create event and attendance objects from
             // the form
+            Attendance.Toggle_Attendance_Save(true);
             var attendance = Attendance.CreateAttendance();
-            console.log('attendance', attendance);
             // this also validates the attendance
             if (attendance === null) {
+                Attendance.Toggle_Attendance_Save(false);
                 return;
             }
             // if they they have admin access, let's save the event too
             // then let's save the attendance
             Attendance.SaveAttendance(attendance);
+        };
+        Attendance.Toggle_Attendance_Save = function (disabled) {
+            var saveButton = document.getElementById("saveAttendance");
+            saveButton.disabled = disabled;
+            if (disabled) {
+                saveButton.classList.add("is-loading");
+            }
+            else {
+                saveButton.classList.remove("is-loading");
+            }
         };
         Attendance.SaveAttendance = function (attendance) {
             XHR.SaveObject("./API/Attendance/Save", attendance).then(function (response) {
@@ -41,10 +52,12 @@ var EventData;
                     console.log('error', errorText);
                     EventData.ShowError(errorText);
                 }
+                Attendance.Toggle_Attendance_Save(false);
             }).catch(function (errors) {
                 // Show error message;
                 console.log('error', errors);
                 EventData.ShowError("An error occurred while attempting to update this event. Please try again. If this issue persists, please contact the help desk.");
+                Attendance.Toggle_Attendance_Save(false);
             });
         };
         Attendance.CreateAttendance = function () {
