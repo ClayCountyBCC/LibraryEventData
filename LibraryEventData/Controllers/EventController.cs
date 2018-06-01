@@ -55,10 +55,10 @@ namespace LibraryEventData.Controllers
           var errors = Event.Validate(newEvents, ua.user_name);
           if (errors == null || errors.Count() == 0) 
           {
-            var ne = Event.SaveEvents(newEvents);
-            if(ne == 0)
+            foreach(Event e in newEvents)
             {
-              errors.Add("Error Saving this list of events. If the issue persists, please reach out to the helpdesk.");
+              int i = e.Save();
+
             }
           }
           else

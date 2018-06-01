@@ -71,7 +71,7 @@ namespace LibraryEventData.Models
             map: (e, a) =>
             {
               e.attendance = a;
-              if (a != null) { e.attendance.GetTargetAudiences(); };
+              e.GetTargetAudiences();
               e.event_date = e.event_date_raw.ToShortDateString();
               e.event_time_from = e.event_time_from_raw.ToShortTimeString();
               e.event_time_to = e.event_time_to_raw.ToShortTimeString();
@@ -116,7 +116,6 @@ namespace LibraryEventData.Models
           E.updated_by, 
           E.updated_on,
           A.event_id, 
-          A.event_type_id, 
           A.youth_count,
           A.adult_count,
           A.notes,
@@ -130,6 +129,27 @@ namespace LibraryEventData.Models
         WHERE 1 = 1
         ";
       return sql;
+    }
+
+    public void GetTargetAudiences()
+    {
+      var dbArg = new DynamicParameters();
+
+      dbArg.Add("@event_id", id);
+
+      var sql = @"
+        USE ClayEventData;
+
+        SELECT target_audience_id
+        FROM Event_Target_Audiences
+        WHERE event_id = @event_id";
+
+      target_audiences = Constants.Get_Data<int>(sql, dbArg);
+
+      if (target_audiences.Count() == 0)
+      {
+        target_audiences = null;
+      }
     }
 
     public static Event GetEvent(long event_id)
@@ -149,7 +169,7 @@ namespace LibraryEventData.Models
                       map: (e, a) =>
                       {
                         e.attendance = a;
-                        if (a != null) { e.attendance.GetTargetAudiences(); };
+                        e.GetTargetAudiences();
                         e.event_date = e.event_date_raw.ToString("yyyy-MM-dd");
                         e.event_time_from = e.event_time_from_raw.ToString("hh:mm tt");
                         e.event_time_to = e.event_time_to_raw.ToString("hh:mm tt");
@@ -176,12 +196,9 @@ namespace LibraryEventData.Models
       }
     }
 
-    public static int SaveEvents(List<Event> events)
+    public int Save()
     {
-
-      // this is only called if all events contain valid data
-      var errors = new List<string>();
-      var sql = @"
+      string query = @"
       USE ClayEventData;
       BEGIN TRY
         BEGIN TRAN SaveEvents;
@@ -206,19 +223,82 @@ namespace LibraryEventData.Models
           ,@added_by
           ,@added_by
           ,GETDATE()
-        )
+        );
+        
+        INSERT INTO Event_Target_Audiences
+          (event_id, target_audience_id)
+        SELECT SCOPE_IDENTITY(), id
+        FROM Target_Audience
+        WHERE id IN @target_audiences;
 
         COMMIT TRAN SaveEvents;
       END TRY
       BEGIN CATCH 
         ROLLBACK TRAN SaveEvents;
       END CATCH";
-
-
-      var rowsAffected = Constants.Save_Data<List<Event>>(sql, events);
-      return rowsAffected;
-
+      return Constants.Save_Data<Event>(query, this);
     }
+
+    //public static int SaveEvents(List<Event> events)
+    //{
+
+    //  // this is only called if all events contain valid data
+    //  var errors = new List<string>();
+    //  var sql = @"
+    //  USE ClayEventData;
+    //  BEGIN TRY
+    //    BEGIN TRAN SaveEvents;
+    //     INSERT INTO Event (
+    //      event_date,
+    //      event_name,
+    //      event_type_id,
+    //      event_time_from,
+    //      event_time_to,
+    //      location_id,
+    //      added_by, 
+    //      updated_by, 
+    //      updated_on)
+    //    VALUES 
+    //    (
+    //      CAST(@event_date_raw AS DATE)
+    //      ,@event_name
+    //      ,@event_type_id
+    //      ,@event_time_from_raw
+    //      ,@event_time_to_raw
+    //      ,@location_id
+    //      ,@added_by
+    //      ,@added_by
+    //      ,GETDATE()
+    //    )
+
+    //    COMMIT TRAN SaveEvents;
+    //  END TRY
+    //  BEGIN CATCH 
+    //    ROLLBACK TRAN SaveEvents;
+    //  END CATCH";
+
+
+    //  var rowsAffected = Constants.Save_Data<List<Event>>(sql, events);
+    //  foreach(Event e in events)
+    //  {
+    //    e.SaveTargetAudience();
+    //  }
+    //  return rowsAffected;
+
+    //}
+
+    //public int SaveTargetAudience()
+    //{
+    //  string query = @"
+    //  DELETE FROM Event_Target_Audiences
+    //  WHERE event_id = @id;
+    //  INSERT INTO Event_Target_Audiences
+    //    (event_id, target_audience_id)
+    //  SELECT @id, id
+    //  FROM Target_Audience
+    //  WHERE id IN @target_audiences;";
+    //  return Constants.Save_Data<Event>(query, this);
+    //}
 
     public static int UpdateEvent(Event e)
     {
@@ -234,7 +314,15 @@ namespace LibraryEventData.Models
         ,location_id = @location_id
         ,updated_by = @added_by
         ,updated_on = GETDATE()
-      WHERE id = @id";
+      WHERE id = @id;
+
+      DELETE FROM Event_Target_Audiences
+      WHERE event_id = @id;
+      INSERT INTO Event_Target_Audiences
+        (event_id, target_audience_id)
+      SELECT @id, id
+      FROM Target_Audience
+      WHERE id IN @target_audiences;";
       return Constants.Save_Data<Event>(sql, e);
     }
 
@@ -247,11 +335,18 @@ namespace LibraryEventData.Models
         errors.Add("There are no events to save. If you have attempted to save a valid event, please try again");
         return errors;
       }
+      var eventTypes = (from e in TargetData.GetCachedEventTypes()
+                        select e.Value).ToList();
+      var targetAudiences = (from ta in TargetData.GetCachedTargetAudience()
+                             select ta.Value).ToList();
       var earlyDate = DateTime.Now.AddYears(-1).Date;
       var farDate = DateTime.Now.AddYears(1).Date;
       var timeList = (from t in TargetData.GetCachedTimeList()
                      select t.Label).ToList();
       List<TargetData> locationList = TargetData.GetCachedLocations();
+
+
+
 
       var count = 1;
       foreach (Event e in events)
@@ -266,6 +361,18 @@ namespace LibraryEventData.Models
         if (e.event_name.Length == 0)
         {
           errors.Add($"Invalid name for event #{count}.");
+        }
+
+        if (!eventTypes.Contains(e.event_type_id.ToString()))
+        {
+          errors.Add("An invalid Event Type was selected, please check your selection and try again.");
+        }
+        foreach (int ta in e.target_audiences)
+        {
+          if (!targetAudiences.Contains(ta.ToString()))
+          {
+            errors.Add("An invalid Target Audience was selected, please check your selection and try again.");
+          }
         }
 
         if (e.event_date_raw.Date < earlyDate || e.event_date_raw.Date > farDate)

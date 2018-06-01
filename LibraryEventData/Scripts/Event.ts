@@ -4,6 +4,8 @@
   {
     id: number;
     event_name: string;
+    event_type_id: number;
+    target_audiences: Array<number>;
     event_date: string;
     event_time_from: string;
     event_time_to: string;
@@ -16,6 +18,8 @@
   {
     public id: number = -1;
     public event_name: string = "";
+    public event_type_id: number = -1;
+    public target_audiences: Array<number> = [];
     public event_date: string;
     public event_time_from: string = "";
     public event_time_to: string = "";
@@ -77,6 +81,7 @@
       for (let e of events)
       {
         let tr = document.createElement("tr");
+        tr.style.cursor = "pointer";
         tr.onclick = function ()
         {
           // this is how we're going go to populate and show the attendance modal.
@@ -152,6 +157,29 @@
         e.location_id = parseInt(location);
       }
 
+      let eventType = EventData.GetSelectValue("selectEventType");
+      if (eventType.length === 0)
+      {
+        errorsFound = true;
+      }
+      else
+      {
+        e.event_type_id = parseInt(eventType);
+      }
+
+      let targetAudiences = EventData.GetMultipleSelectValue("selectTargetAudience");
+      if (targetAudiences.length === 0)
+      {
+        errorsFound = true;
+      }
+      else
+      {
+        for (let ta of targetAudiences)
+        {
+          e.target_audiences.push(parseInt(ta));
+        }
+      }
+
       let eventDate = EventData.GetInputValue("eventDate");
       if (eventDate.length === 0)
       {
@@ -201,10 +229,29 @@
       let error = false;
       let eventNameElement = <HTMLInputElement>document.getElementById("addEventName");
       let eventName = eventNameElement.value.trim();
+      let eventTypeElement = <HTMLSelectElement>document.getElementById("addEventType");
+      let eventType = eventTypeElement.value;
+      let targetAudiences = EventData.GetMultipleSelectValue("addTargetAudience");
+      let targetAudienceElement = <HTMLSelectElement>document.getElementById("addTargetAudience");
+
       eventNameElement.classList.remove("is-danger");
       if (eventName.length < 3)
       {
         eventNameElement.classList.add("is-danger");
+        error = true;
+      }
+
+      eventTypeElement.parentElement.classList.remove("is-danger");
+      if (eventType === "-1")
+      {
+        eventTypeElement.parentElement.classList.add("is-danger");
+        error = true;
+      }
+
+      targetAudienceElement.parentElement.classList.remove("is-danger");
+      if (targetAudiences.length === 0)
+      {
+        targetAudienceElement.parentElement.classList.add("is-danger");
         error = true;
       }
       
@@ -222,6 +269,11 @@
         let event = new Event();
         event.id = i;
         event.event_name = eventName;
+        event.event_type_id = parseInt(eventType);
+        for (let ta of targetAudiences)
+        {
+          event.target_audiences.push(parseInt(ta));
+        }
 
         if (locationElement.selectedIndex === 0)
         {
@@ -338,6 +390,11 @@
       // no matter it's current state.
       let eventName = <HTMLInputElement>document.getElementById("addEventName");
       eventName.value = "";
+      let eventType = <HTMLSelectElement>document.getElementById("addEventType");
+      eventType.selectedIndex = 0;
+      let targetAudience = <HTMLSelectElement>document.getElementById("addTargetAudience");
+      targetAudience.selectedIndex = -1;
+
       let addEventContainer = document.getElementById("addEventList");
       Utilities.Clear_Element(addEventContainer);
       AddedEvents = [];

@@ -13,7 +13,6 @@ var EventData;
     EventData.Start = Start;
     function GetInitialData() {
         EventData.DataContainer.Get().then(function (dc) {
-            console.log('dc', dc);
             EventData.CurrentAccess = dc.CurrentAccess;
             EventData.Times = dc.Times;
             EventData.Locations = dc.Locations;
@@ -38,11 +37,15 @@ var EventData;
             var selectTimeTo = document.getElementById("selectTimeTo");
             var eventDate = document.getElementById("eventDate");
             var eventName = document.getElementById("eventName");
+            var eventType = document.getElementById("selectEventType");
+            var targetAudiences = document.getElementById("selectTargetAudience");
             selectLocation.disabled = false;
             selectTimeFrom.disabled = false;
             selectTimeTo.disabled = false;
             eventDate.disabled = false;
             eventName.disabled = false;
+            eventType.disabled = false;
+            targetAudiences.disabled = false;
             EventData.Event.ResetAddEvent();
         }
     }
@@ -51,14 +54,18 @@ var EventData;
         var locFilter = document.getElementById("filterLocation");
         // these are on the add Attendance menu
         var etSelect = document.getElementById("selectEventType");
-        etSelect.appendChild(Utilities.Create_Option("-1", "Select Event Type", true));
+        var etAddSelect = document.getElementById("addEventType");
+        etAddSelect.appendChild(Utilities.Create_Option("-1", "Select Event Type", true));
         var taSelect = document.getElementById("selectTargetAudience");
+        var taAddSelect = document.getElementById("addTargetAudience");
         // this one will only be enabled if the user has admin access.
         var locSelect = document.getElementById("selectLocation");
         var timeFrom = document.getElementById("selectTimeFrom");
         var timeTo = document.getElementById("selectTimeTo");
         PopulateSelect(etSelect, EventTypes);
+        PopulateSelect(etAddSelect, EventTypes);
         PopulateSelect(taSelect, TargetAudiences);
+        PopulateSelect(taAddSelect, TargetAudiences);
         PopulateSelect(locFilter, Locations);
         PopulateSelect(locSelect, Locations);
         PopulateSelect(timeFrom, Times);

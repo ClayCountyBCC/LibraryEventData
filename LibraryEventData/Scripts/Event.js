@@ -4,6 +4,8 @@ var EventData;
         function Event() {
             this.id = -1;
             this.event_name = "";
+            this.event_type_id = -1;
+            this.target_audiences = [];
             this.event_time_from = "";
             this.event_time_to = "";
             this.location_id = -1;
@@ -47,6 +49,7 @@ var EventData;
             Utilities.Clear_Element(eventList);
             var _loop_1 = function (e) {
                 var tr = document.createElement("tr");
+                tr.style.cursor = "pointer";
                 tr.onclick = function () {
                     // this is how we're going go to populate and show the attendance modal.
                     // this function is going to request a this event from the server 
@@ -109,6 +112,23 @@ var EventData;
             else {
                 e.location_id = parseInt(location);
             }
+            var eventType = EventData.GetSelectValue("selectEventType");
+            if (eventType.length === 0) {
+                errorsFound = true;
+            }
+            else {
+                e.event_type_id = parseInt(eventType);
+            }
+            var targetAudiences = EventData.GetMultipleSelectValue("selectTargetAudience");
+            if (targetAudiences.length === 0) {
+                errorsFound = true;
+            }
+            else {
+                for (var _i = 0, targetAudiences_1 = targetAudiences; _i < targetAudiences_1.length; _i++) {
+                    var ta = targetAudiences_1[_i];
+                    e.target_audiences.push(parseInt(ta));
+                }
+            }
             var eventDate = EventData.GetInputValue("eventDate");
             if (eventDate.length === 0) {
                 errorsFound = true;
@@ -145,9 +165,23 @@ var EventData;
             var error = false;
             var eventNameElement = document.getElementById("addEventName");
             var eventName = eventNameElement.value.trim();
+            var eventTypeElement = document.getElementById("addEventType");
+            var eventType = eventTypeElement.value;
+            var targetAudiences = EventData.GetMultipleSelectValue("addTargetAudience");
+            var targetAudienceElement = document.getElementById("addTargetAudience");
             eventNameElement.classList.remove("is-danger");
             if (eventName.length < 3) {
                 eventNameElement.classList.add("is-danger");
+                error = true;
+            }
+            eventTypeElement.parentElement.classList.remove("is-danger");
+            if (eventType === "-1") {
+                eventTypeElement.parentElement.classList.add("is-danger");
+                error = true;
+            }
+            targetAudienceElement.parentElement.classList.remove("is-danger");
+            if (targetAudiences.length === 0) {
+                targetAudienceElement.parentElement.classList.add("is-danger");
                 error = true;
             }
             var events = [];
@@ -164,6 +198,11 @@ var EventData;
                 var event_1 = new Event();
                 event_1.id = i;
                 event_1.event_name = eventName;
+                event_1.event_type_id = parseInt(eventType);
+                for (var _b = 0, targetAudiences_2 = targetAudiences; _b < targetAudiences_2.length; _b++) {
+                    var ta = targetAudiences_2[_b];
+                    event_1.target_audiences.push(parseInt(ta));
+                }
                 if (locationElement.selectedIndex === 0) {
                     locationElement.parentElement.classList.add("is-danger");
                     error = true;
@@ -248,6 +287,10 @@ var EventData;
             // no matter it's current state.
             var eventName = document.getElementById("addEventName");
             eventName.value = "";
+            var eventType = document.getElementById("addEventType");
+            eventType.selectedIndex = 0;
+            var targetAudience = document.getElementById("addTargetAudience");
+            targetAudience.selectedIndex = -1;
             var addEventContainer = document.getElementById("addEventList");
             Utilities.Clear_Element(addEventContainer);
             EventData.AddedEvents = [];

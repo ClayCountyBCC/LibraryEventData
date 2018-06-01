@@ -3,20 +3,17 @@
   interface IAttendance
   {
     event_id: number;
-    event_type_id: number;
     youth_count: number;
     adult_count: number;
-    target_audiences: Array<number>;
+    
     notes: string;
   }
 
   export class Attendance implements IAttendance
   {
     event_id: number = -1;
-    event_type_id: number = -1;
     youth_count: number = 0;
     adult_count: number = 0;
-    target_audiences: Array<number> = [];
     notes: string = "";
 
     constructor()
@@ -86,28 +83,7 @@
       // attendance object if successful or null if there are errors.
       let errorsFound = false;
       let a = new Attendance();
-      let eventType = EventData.GetSelectValue("selectEventType");
-      if (eventType.length === 0)
-      {
-        errorsFound = true;
-      }
-      else
-      {
-        a.event_type_id = parseInt(eventType);
-      }
-      let targetAudiences = EventData.GetMultipleSelectValue("selectTargetAudience");
-      if (targetAudiences.length === 0)
-      {
-        errorsFound = true;
-      }
-      else
-      {
-        a.target_audiences = [];
-        for (let ta of targetAudiences)
-        {
-          a.target_audiences.push(parseInt(ta));
-        }
-      }
+
       let youthCount = EventData.GetInputValue("youthCount");
       if (youthCount.length === 0)
       {
@@ -150,21 +126,19 @@
       EventData.SetSelectValue("selectTimeFrom", event.event_time_from);
       EventData.SetSelectValue("selectTimeTo", event.event_time_to);
       let targetAudiences = <HTMLSelectElement>document.getElementById("selectTargetAudience");
-      if (event.attendance === null || event.attendance.event_id === -1)
-      {
-        EventData.SetSelectValue("selectEventType", "-1");
-        EventData.SetInputValue("youthCount", "");
-        EventData.SetInputValue("adultCount", "");
-        EventData.SetInputValue("eventNotes", "");
-        targetAudiences.selectedIndex = -1;
-        return;
-      }
-      EventData.SetSelectValue("selectEventType", event.attendance.event_type_id.toString());
+      EventData.SetSelectValue("selectEventType", event.event_type_id.toString());
       for (let i = 0; i < targetAudiences.options.length; i++)
       {
         let item = targetAudiences.options[i];
-        let found = (event.attendance.target_audiences.indexOf(parseInt(item.value)) !== -1);
+        let found = (event.target_audiences.indexOf(parseInt(item.value)) !== -1);
         item.selected = found;
+      }
+      if (event.attendance === null || event.attendance.event_id === -1)
+      {
+        EventData.SetInputValue("youthCount", "");
+        EventData.SetInputValue("adultCount", "");
+        EventData.SetInputValue("eventNotes", "");        
+        return;
       }
       EventData.SetInputValue("youthCount", event.attendance.youth_count.toString());
       EventData.SetInputValue("adultCount", event.attendance.adult_count.toString());
