@@ -112,7 +112,8 @@
 
         </div>
         <div class="level-item">
-          <button onclick="EventData.Event.GetList();"
+          <button id="refreshList"
+                  onclick="EventData.Event.GetList();"
                   type="button"
                   class="button is-success">
             Refresh
@@ -202,7 +203,8 @@
           <tr>
             <td colspan="4"></td>
             <td>
-              <button onclick="EventData.Event.Save(); return false;"
+              <button id="saveEvent"
+                      onclick="EventData.Event.Save(); return false;"
                       class="button is-success"
                       type="button">
                 Save Events
@@ -373,7 +375,8 @@
         </div>
       </section>
       <footer class="modal-card-foot">
-        <button onclick="EventData.Attendance.Save();"
+        <button id="saveAttendance"
+                onclick="EventData.Attendance.Save();"
                 type="button"
                 class="button is-success">
           Save Changes

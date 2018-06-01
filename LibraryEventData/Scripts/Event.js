@@ -158,10 +158,24 @@ var EventData;
                 return e;
             }
         };
+        Event.Toggle_Event_Save = function (disabled) {
+            var saveButton = document.getElementById("saveEvent");
+            saveButton.disabled = disabled;
+            if (disabled) {
+                saveButton.classList.add("is-loading");
+            }
+            else {
+                saveButton.classList.remove("is-loading");
+            }
+        };
         Event.Save = function () {
             // this function will take the contents of the
             // event creation page and convert it into javascript
             // objects and send them to the Save URI.
+            // indicate that we're saving by:
+            // adding a loading indicator to the save button
+            // disabling the save button while we're saving
+            Event.Toggle_Event_Save(true);
             var error = false;
             var eventNameElement = document.getElementById("addEventName");
             var eventName = eventNameElement.value.trim();
@@ -241,6 +255,9 @@ var EventData;
                 //Event.BuildEventList(events);
                 Event.SaveEvents(events); // enable on endpoints updated
             }
+            else {
+                Event.Toggle_Event_Save(false);
+            }
         };
         Event.SaveEvents = function (events) {
             XHR.SaveObject("./API/Event/Save", events).then(function (response) {
@@ -258,11 +275,13 @@ var EventData;
                     console.log('errortext', errorText);
                     EventData.ShowError(errorText);
                 }
+                Event.Toggle_Event_Save(false);
             }).catch(function (errors) {
                 // Show error message;
                 EventData.CloseModals();
                 console.log('error', errors);
                 EventData.ShowError("An error occurred while attempting to save these events. Please try again. If this issue persists, please contact the help desk.");
+                Event.Toggle_Event_Save(false);
             });
         };
         Event.UpdateEvent = function (event) {
@@ -295,6 +314,7 @@ var EventData;
             Utilities.Clear_Element(addEventContainer);
             EventData.AddedEvents = [];
             Event.AddEventRow();
+            Event.Toggle_Event_Save(false);
         };
         Event.AddEventRow = function () {
             var id = 1;

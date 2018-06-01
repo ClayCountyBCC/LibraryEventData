@@ -221,11 +221,30 @@
       }
     }
 
+    static Toggle_Event_Save(disabled: boolean)
+    {
+      let saveButton = <HTMLButtonElement>document.getElementById("saveEvent");      
+      saveButton.disabled = disabled;
+      if (disabled)
+      {
+        saveButton.classList.add("is-loading");
+      }
+      else
+      {
+        saveButton.classList.remove("is-loading");
+      }
+    }
+
     public static Save(): void
     {
       // this function will take the contents of the
       // event creation page and convert it into javascript
       // objects and send them to the Save URI.
+      // indicate that we're saving by:
+      // adding a loading indicator to the save button
+      // disabling the save button while we're saving
+      Event.Toggle_Event_Save(true);
+
       let error = false;
       let eventNameElement = <HTMLInputElement>document.getElementById("addEventName");
       let eventName = eventNameElement.value.trim();
@@ -328,6 +347,10 @@
         //Event.BuildEventList(events);
         Event.SaveEvents(events); // enable on endpoints updated
       }
+      else
+      {
+        Event.Toggle_Event_Save(false);
+      }
 
     }
 
@@ -351,6 +374,7 @@
           console.log('errortext', errorText);
           EventData.ShowError(errorText);
         }
+        Event.Toggle_Event_Save(false);
         
       }).catch(function (errors)
       {
@@ -358,6 +382,7 @@
         EventData.CloseModals();
         console.log('error', errors);
         EventData.ShowError("An error occurred while attempting to save these events. Please try again. If this issue persists, please contact the help desk.");
+        Event.Toggle_Event_Save(false);
       });
     }
 
@@ -399,6 +424,7 @@
       Utilities.Clear_Element(addEventContainer);
       AddedEvents = [];
       Event.AddEventRow();
+      Event.Toggle_Event_Save(false);
     }
 
     public static AddEventRow(): void

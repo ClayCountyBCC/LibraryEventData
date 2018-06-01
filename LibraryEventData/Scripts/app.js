@@ -12,6 +12,7 @@ var EventData;
     }
     EventData.Start = Start;
     function GetInitialData() {
+        Toggle_Initial_Controls(true);
         EventData.DataContainer.Get().then(function (dc) {
             EventData.CurrentAccess = dc.CurrentAccess;
             EventData.Times = dc.Times;
@@ -19,10 +20,31 @@ var EventData;
             PopulateUIElements(dc.Event_Types, dc.Target_Audiences, dc.Locations, EventData.Times);
             HandleUserAccess();
             EventData.Event.GetList();
+            Toggle_Initial_Controls(false);
         }).catch(function (error) {
             // Notify of error.  If this happens, the app is basically unusable.
             ShowError("There was an issue loading the initial data.  Please refresh the web page and try again.  If this issue persists, please contact the help desk.");
         });
+    }
+    function Toggle_Initial_Controls(disabled) {
+        var incomplete = document.getElementById("filterInComplete");
+        var location = document.getElementById("filterLocation");
+        var eventDate = document.getElementById("filterEventDate");
+        var refresh = document.getElementById("refreshList");
+        incomplete.disabled = disabled;
+        location.disabled = disabled;
+        eventDate.disabled = disabled;
+        refresh.disabled = disabled;
+        if (disabled) {
+            location.parentElement.classList.add("is-loading");
+            eventDate.parentElement.classList.add("is-loading");
+            refresh.classList.add("is-loading");
+        }
+        else {
+            location.parentElement.classList.remove("is-loading");
+            eventDate.parentElement.classList.remove("is-loading");
+            refresh.classList.remove("is-loading");
+        }
     }
     function HandleUserAccess() {
         // The default setup of the HTML page is for the appropriate fields
