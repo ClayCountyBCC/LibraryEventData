@@ -3,10 +3,8 @@ var EventData;
     var Attendance = /** @class */ (function () {
         function Attendance() {
             this.event_id = -1;
-            this.event_type_id = -1;
             this.youth_count = 0;
             this.adult_count = 0;
-            this.target_audiences = [];
             this.notes = "";
         }
         Attendance.Save = function () {
@@ -55,24 +53,6 @@ var EventData;
             // attendance object if successful or null if there are errors.
             var errorsFound = false;
             var a = new Attendance();
-            var eventType = EventData.GetSelectValue("selectEventType");
-            if (eventType.length === 0) {
-                errorsFound = true;
-            }
-            else {
-                a.event_type_id = parseInt(eventType);
-            }
-            var targetAudiences = EventData.GetMultipleSelectValue("selectTargetAudience");
-            if (targetAudiences.length === 0) {
-                errorsFound = true;
-            }
-            else {
-                a.target_audiences = [];
-                for (var _i = 0, targetAudiences_1 = targetAudiences; _i < targetAudiences_1.length; _i++) {
-                    var ta = targetAudiences_1[_i];
-                    a.target_audiences.push(parseInt(ta));
-                }
-            }
             var youthCount = EventData.GetInputValue("youthCount");
             if (youthCount.length === 0) {
                 errorsFound = true;
@@ -107,19 +87,17 @@ var EventData;
             EventData.SetSelectValue("selectTimeFrom", event.event_time_from);
             EventData.SetSelectValue("selectTimeTo", event.event_time_to);
             var targetAudiences = document.getElementById("selectTargetAudience");
+            EventData.SetSelectValue("selectEventType", event.event_type_id.toString());
+            for (var i = 0; i < targetAudiences.options.length; i++) {
+                var item = targetAudiences.options[i];
+                var found = (event.target_audiences.indexOf(parseInt(item.value)) !== -1);
+                item.selected = found;
+            }
             if (event.attendance === null || event.attendance.event_id === -1) {
-                EventData.SetSelectValue("selectEventType", "-1");
                 EventData.SetInputValue("youthCount", "");
                 EventData.SetInputValue("adultCount", "");
                 EventData.SetInputValue("eventNotes", "");
-                targetAudiences.selectedIndex = -1;
                 return;
-            }
-            EventData.SetSelectValue("selectEventType", event.attendance.event_type_id.toString());
-            for (var i = 0; i < targetAudiences.options.length; i++) {
-                var item = targetAudiences.options[i];
-                var found = (event.attendance.target_audiences.indexOf(parseInt(item.value)) !== -1);
-                item.selected = found;
             }
             EventData.SetInputValue("youthCount", event.attendance.youth_count.toString());
             EventData.SetInputValue("adultCount", event.attendance.adult_count.toString());

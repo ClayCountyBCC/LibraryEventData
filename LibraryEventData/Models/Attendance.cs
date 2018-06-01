@@ -32,13 +32,12 @@ namespace LibraryEventData.Models
       
         SELECT
           A.event_id
-         ,A.event_type_id
          ,A.youth_count
          ,A.adult_count
          ,A.notes
         FROM [Attendance] A
         WHERE event_id = @event_id
-        ";
+    ";
 
       try
       {
@@ -55,23 +54,10 @@ namespace LibraryEventData.Models
     public List<string> Validate()
     {
       var errors = new List<string>();
-      var eventTypes = (from e in TargetData.GetCachedEventTypes()
-                        select e.Value).ToList();
-      var targetAudiences = (from ta in TargetData.GetCachedTargetAudience()
-                             select ta.Value).ToList();
 
 
-      if (!eventTypes.Contains(event_type_id.ToString()))
-      {
-        errors.Add("An invalid Event Type was selected, please check your selection and try again.");
-      }
-      foreach (int ta in target_audiences)
-      {
-        if (!targetAudiences.Contains(ta.ToString()))
-        {
-          errors.Add("An invalid Target Audience was selected, please check your selection and try again.");
-        }
-      }
+
+
       if (youth_count < 0)
       {
         errors.Add("The youth count cannot be set to less than 0.");
@@ -95,7 +81,6 @@ namespace LibraryEventData.Models
       USING (SELECT * FROM ( SELECT
         @event_id event_id,
         @added_by added_by,
-        @event_type_id event_type_id,
         @youth_count youth_count,
         @adult_count adult_count,
         @notes notes) AS TMP ) B
@@ -105,7 +90,6 @@ namespace LibraryEventData.Models
       WHEN NOT MATCHED BY TARGET THEN
         INSERT 
           (event_id
-          ,event_type_id 
           ,youth_count
           ,adult_count
           ,notes
@@ -114,7 +98,6 @@ namespace LibraryEventData.Models
           ,updated_on)
         VALUES
           (@event_id
-          ,@event_type_id
           ,@youth_count
           ,@adult_count
           ,@notes
@@ -125,22 +108,13 @@ namespace LibraryEventData.Models
       WHEN MATCHED THEN
         UPDATE 
         SET 
-          event_type_id = @event_type_id
-         ,youth_count = @youth_count
+         youth_count = @youth_count
          ,adult_count = @adult_count
          ,notes = @notes
          ,updated_by = @added_by
          ,updated_on = GETDATE();
 
-      -- Update the Target Audiences here
-      DELETE FROM Event_Target_Audiences
-      WHERE event_id=@event_id;
 
-      INSERT INTO Event_Target_Audiences 
-        (event_id, target_audience_id)
-      SELECT @event_id, id
-      FROM Target_Audience
-      WHERE id IN @target_audiences
 
       ";
       try
@@ -155,26 +129,7 @@ namespace LibraryEventData.Models
       }
     }
 
-    public void GetTargetAudiences()
-    {
-      var dbArg = new DynamicParameters();
 
-      dbArg.Add("@event_id", this.event_id);
-
-      var sql = @"
-        USE ClayEventData;
-
-        SELECT target_audience_id
-        FROM Event_Target_Audiences
-        WHERE event_id = @event_id";
-
-      this.target_audiences = Constants.Get_Data<int>(sql, dbArg);
-
-      if (this.target_audiences.Count() == 0)
-      {
-        this.target_audiences = null;
-      }
-    }
 
     public static DateTime GetAttendanceDate(long event_id)
     {
