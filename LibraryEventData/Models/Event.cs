@@ -59,7 +59,7 @@ namespace LibraryEventData.Models
       if (Location > 0)
       {
         dp.Add("@Location", Location);
-        sql += "AND Location_id = @Location ";
+        sql += " AND Location_id = @Location ";
       }
       sql += Environment.NewLine + "ORDER BY E.event_date ASC";
       try
