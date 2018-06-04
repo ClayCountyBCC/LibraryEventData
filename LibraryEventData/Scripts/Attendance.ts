@@ -30,11 +30,13 @@
 
       // first let's create event and attendance objects from
       // the form
+      Attendance.Toggle_Attendance_Save(true);
+
       let attendance = Attendance.CreateAttendance();
-      console.log('attendance', attendance);
       // this also validates the attendance
       if (attendance === null)
       {
+        Attendance.Toggle_Attendance_Save(false);
         return;
       }
 
@@ -43,6 +45,20 @@
 
       // then let's save the attendance
       Attendance.SaveAttendance(attendance);
+    }
+
+    static Toggle_Attendance_Save(disabled: boolean)
+    {
+      let saveButton = <HTMLButtonElement>document.getElementById("saveAttendance");
+      saveButton.disabled = disabled;
+      if (disabled)
+      {
+        saveButton.classList.add("is-loading");
+      }
+      else
+      {
+        saveButton.classList.remove("is-loading");
+      }
     }
 
     public static SaveAttendance(attendance: Attendance)
@@ -67,12 +83,14 @@
           console.log('error', errorText);
           EventData.ShowError(errorText);
         }
+        Attendance.Toggle_Attendance_Save(false);
 
       }).catch(function (errors)
       {
         // Show error message;
         console.log('error', errors);
         EventData.ShowError("An error occurred while attempting to update this event. Please try again. If this issue persists, please contact the help desk.");
+        Attendance.Toggle_Attendance_Save(false);
       });
     }
 
