@@ -144,13 +144,17 @@ namespace LibraryEventData.Models
       ";
       try
       {
-        var date = Constants.Get_Data<DateTime>(sql, param).First();
-        return date;
+        var dates = Constants.Get_Data<DateTime>(sql, param).ToList();
+        if(dates.Count() == 0)
+        {
+          return DateTime.MaxValue.Date;
+        }
+        return dates.First().Date;
       }
       catch (Exception ex)
       {
         new ErrorLog(ex, sql);
-        return DateTime.MinValue.Date;
+        return DateTime.MaxValue.Date;
       }
     }
   }
