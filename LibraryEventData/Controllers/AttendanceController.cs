@@ -23,7 +23,7 @@ namespace LibraryEventData.Controllers
       if (ua.current_access != UserAccess.access_type.admin_access &&
          Attendance.GetAttendanceDate(attendance.event_id).Date < DateTime.Today.Date)
       {
-        errors.Add("Incorrect level of access necessary to change attendance data after day of event.");
+        errors.Add("Attendance data can only be changed the same day it is saved.  Please contact the helpdesk if it was saved in error.");
         return Ok(errors);
       }
       int i = attendance.Save();
