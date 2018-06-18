@@ -84,8 +84,8 @@ namespace LibraryEventData.Models
     public static List<TargetData> GetCachedTimeList()
     {
       var times = new List<TargetData>();
-      DateTime date = DateTime.MinValue.AddHours(10);
-      DateTime endDate = date.AddHours(12);
+      DateTime date = DateTime.MinValue.AddHours(8);
+      DateTime endDate = date.AddHours(14);
       while (date <= endDate)
       {
         var d = date.ToString("hh:mm tt");
