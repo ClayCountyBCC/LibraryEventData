@@ -72,6 +72,7 @@ namespace LibraryEventData.Models
           }
           var groups = (from g in up.GetAuthorizationGroups()
                         select g.Name).ToList();
+
           if (groups.Contains(event_admin_group) || groups.Contains(mis_access_group))
           {
             current_access = access_type.admin_access;
